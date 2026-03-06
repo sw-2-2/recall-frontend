@@ -11,7 +11,8 @@ const SchoolRow = ({ name, region, image }: Props) => {
       <div className="">
         <div className="">{name}</div>
         <div className="">{region}</div>
-        <button className="">프로필 등록하기</button>
+        <button className="">학교 인증하기</button> 
+        {/* 등록이 되었을 시, 인증 버튼은 사라지도록 설계 */}
       </div>
 
       <div className="">

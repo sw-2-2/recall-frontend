@@ -1,7 +1,7 @@
 import AlumniCard from '../components/ui/AlumniCard'
 import TopBar from '../components/ui/TopBar'
 import SideMenu from '../components/ui/SideMenu'
-import favicon from '../assets/icons/jaewon-favicon.png'
+import favicon from '../assets/icons/school_dummy.jpeg'
 
 
 const alumni = [

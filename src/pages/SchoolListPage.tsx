@@ -1,7 +1,7 @@
 import SchoolRow from '../components/ui/SchoolRow'
 import SideMenu from '../components/ui/SideMenu'
 import TopBar from '../components/ui/TopBar'
-import Image from '../assets/icon/school_dummy.jpeg'
+import Image from '../assets/icons/school_dummy.jpeg'
 
 const schools = [
   { name: '가고등학교', region: '인천', image: Image},
