@@ -1,42 +1,374 @@
+:root {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: #1f1f1f;
+}
+
 #root {
-  max-width: 1280px;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #3f3f3f;
+}
+
+button {
+  border: 0;
+  background: #e5e5e5;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.page-nav {
+  display: flex;
+  gap: 8px;
+  margin: 0 auto 12px;
+  max-width: 1120px;
+}
+
+.page-nav a {
+  text-decoration: none;
+  color: #f2f2f2;
+  border: 1px solid #6a6a6a;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.page-nav a.active {
+  background: #f2f2f2;
+  color: #222;
+}
+
+.screen {
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  min-height: 520px;
+  background: #dcdcdc;
+  border: 1px solid #808080;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.screen--centered {
+  display: grid;
+  place-items: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.login-card {
+  width: min(86%, 360px);
+  min-height: 280px;
+  border: 4px solid #4b98ff;
+  background: #efefef;
+  padding: 38px 44px;
+  display: grid;
+  gap: 14px;
+}
+
+.login-card h1,
+.login-card h2 {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.login-card p {
+  font-size: 14px;
+}
+
+.login-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 12px;
+}
+
+.login-row button {
+  background: #efe95a;
+}
+
+.top-bar {
+  height: 42px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 120px;
+  align-items: center;
+  border-bottom: 1px solid #a8a8a8;
+  background: #e6e6e6;
+  font-size: 12px;
+  padding: 0 10px;
+  gap: 10px;
+}
+
+.top-bar__search,
+.top-bar__photo {
+  height: 20px;
+  background: #d0d0d0;
+  display: grid;
+  place-items: center;
+  color: #4f4f4f;
+}
+
+.layout-body {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  min-height: 477px;
+}
+
+.layout-body--grow {
+  min-height: 430px;
+}
+
+.side-menu {
+  border-right: 1px solid #a8a8a8;
+  background: #cdcdcd;
+}
+
+.side-menu__item {
+  width: 100%;
+  text-align: left;
+  padding: 11px 10px;
+  border-bottom: 1px solid #b7b7b7;
+  background: transparent;
+}
+
+.content {
+  padding: 0;
+  background: #ececec;
+}
+
+.content--stack {
+  display: grid;
+}
+
+.school-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #a9a9a9;
+  min-height: 86px;
+}
+
+.school-row__info {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+}
+
+.school-row__info button {
+  width: fit-content;
+  background: #d8d8d8;
+}
+
+.school-row__photo {
+  background: #df3a33;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+
+.content--profile {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  background: #efefef;
+}
+
+.panel {
+  padding: 14px 16px;
+  border-bottom: 1px solid #bababa;
+  font-size: 12px;
+}
+
+.panel h3 {
+  margin-bottom: 10px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.avatar-block {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #bfbfbf;
+}
+
+.profile-fields {
+  display: grid;
+  gap: 8px;
+  max-width: 220px;
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.school-form {
+  margin: 12px 0;
+  display: grid;
+  gap: 12px;
+}
+
+.school-form__row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: start;
+  gap: 10px;
+}
+
+.lines {
+  display: grid;
+  gap: 6px;
+  max-width: 180px;
+}
+
+.lines i {
+  display: block;
+  height: 9px;
+  background: #d5d5d5;
+}
+
+.panel--inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-footer {
+  height: 42px;
+  background: #050505;
+  color: #f2f2f2;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+
+.highlight-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #b7b7b7;
+  min-height: 86px;
+}
+
+.highlight-row__school {
+  background: #d6d6b0;
+  padding: 16px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+.highlight-row__photo {
+  background: #df3a33;
+}
+
+.section-title {
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.alumni-grid {
+  padding: 0 12px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.alumni-card {
+  border: 1px solid #cbcbcb;
+  background: #dddddd;
+  min-height: 136px;
+  padding: 8px;
+  font-size: 11px;
+  display: grid;
+  grid-template-rows: 58px auto 1fr;
+  gap: 6px;
+}
+
+.alumni-card__photo {
+  background: #b9b9b9;
+  display: grid;
+  place-items: center;
+}
+
+.alumni-card__name {
+  font-weight: 600;
+}
+
+.alumni-card__detail {
+  line-height: 1.25;
+  white-space: pre-line;
+}
+
+.alumni-card--empty {
+  background: #d0d0d0;
+}
+
+@media (max-width: 900px) {
+  .layout-body {
+    grid-template-columns: 92px 1fr;
   }
-  to {
-    transform: rotate(360deg);
+
+  .top-bar {
+    grid-template-columns: 1fr 1.4fr 90px;
+  }
+
+  .alumni-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 12px;
   }
-}
 
-.card {
-  padding: 2em;
-}
+  .page-nav {
+    flex-wrap: wrap;
+  }
 
-.read-the-docs {
-  color: #888;
+  .layout-body {
+    grid-template-columns: 1fr;
+  }
+
+  .side-menu {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-right: 0;
+    border-bottom: 1px solid #a8a8a8;
+  }
+
+  .side-menu__item {
+    text-align: center;
+    font-size: 11px;
+    padding: 9px 4px;
+  }
+
+  .school-row,
+  .highlight-row {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .alumni-grid {
+    grid-template-columns: 1fr;
+  }
 }
