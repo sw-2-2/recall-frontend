@@ -4,11 +4,14 @@ import AlumniListPage from './pages/AlumniListPage'
 import LoginPage from './pages/LoginPage'
 import ProfilePage from './pages/ProfilePage'
 import SchoolListPage from './pages/SchoolListPage'
+import TopBar from './components/ui/TopBar'
+import PageFooter from './components/ui/PageFooter'
 
 function App() {
   return (
-    <div className="app-shell">
-      <nav className="page-nav">
+    <div className="">
+      <TopBar></TopBar>
+      <nav className="">
         <NavLink to="/">로그인</NavLink>
         <NavLink to="/schools">학교 리스트</NavLink>
         <NavLink to="/profile">프로필</NavLink>
@@ -22,6 +25,8 @@ function App() {
         <Route path="/alumni" element={<AlumniListPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      <PageFooter></PageFooter>
     </div>
   )
 }

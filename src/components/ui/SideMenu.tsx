@@ -4,9 +4,9 @@ interface SideMenuProps {
 
 function SideMenu({ items }: SideMenuProps) {
   return (
-    <aside className="side-menu">
+    <aside className="">
       {items.map((item) => (
-        <button key={item} type="button" className="side-menu__item">
+        <button key={item} type="button" className="">
           {item}
         </button>
       ))}
