@@ -1,0 +1,22 @@
+.sectionDivider {
+    border-width: 0px 0px 1px;
+    border-style: solid;
+    border-color: #dddddd;
+}
+
+.profileEdit {
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 5vh;
+}
+
+.profilePhoto {
+    border-radius: 50%;
+}
+
+.SaveProfile {
+    padding-left: calc(90% - 0%);
+}

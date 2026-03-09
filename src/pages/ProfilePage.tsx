@@ -2,28 +2,26 @@ import SchoolAdd from '../components/ui/SchoolAdd'
 import SideMenu from '../components/ui/SideMenu'
 import TopBar from '../components/ui/TopBar'
 import favicon from '../assets/icons/jaewon-favicon.png'
-
+import style from './styles/ProfilePage.module.css'
 
 
 function ProfilePage() {
   return (
-    <section className="">
+    <section>
       <div className="">
         <main className="">
           <form>
-            <section className="">
-              <h3>내 프로필 수정</h3>
-              <div className="">
-                <div className="">
-                  <div className="" />
-                  <img src={favicon} style={{ width: '100px' }} /> {/* 기존 DB에 등록된 이미지를 가져올 수 있도록 로직 구성 필요 */}
-
+            <section className={style.sectionDivider}>
+              <div>내 프로필 수정</div>
+              <div className={style.profileEdit}>
+                <span>
+                  <img className={style.profilePhoto} src={favicon} style={{ width: '100px' }} />
                   <div>
-                    <input type="file" accept='image/*' />{/* 이미지만 받을 수 있게 함 */}
-                  </div> 
-                </div>
+                    <input type="file" accept='image/*' />
+                  </div>
+                </span>
 
-                <div className="">
+                <span className="">
                   <div>
                     이름 :
                     <input type='text' id='name' placeholder='이름을 입력해주세요.'></input>
@@ -40,16 +38,16 @@ function ProfilePage() {
                     지역 :
                     <input type='text' id='region' placeholder='지역을 입력해주세요.'></input>
                   </div>
+                </span>
+              </div>
+                <div className={style.SaveProfile}>
+                  <button type="submit">저장</button>
                 </div>
-              </div>
-
-              <div className="">
-                <button type="submit">저장</button>
-              </div>
+                
             </section>
           </form>
-
-          <section className="">
+          
+          <section className={style.sectionDivider}>
             <h3>학교 등록</h3>
             <p>내 동창을 찾으려면 내 학교를 등록하면 더 정확해요</p>
 
@@ -64,7 +62,7 @@ function ProfilePage() {
             </div>
           </section>
 
-          <section className="">
+          <section className={style.sectionDivider}>
             <span>계정</span>
             <button type="button">로그아웃</button>
           </section>
