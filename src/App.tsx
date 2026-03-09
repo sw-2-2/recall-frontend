@@ -8,12 +8,12 @@ import SideMenu from './components/ui/SideMenu'
 import TopBar from './components/ui/TopBar'
 
 function App() {
-  let login = true;
+  let login = false;
 
   if (!login) {
     return (
-      <div className="appShell">
-        <div className="appMain">
+      <div className='appShell'>
+        <div className='appMainLogin'>
           <Routes>
             <Route path="/" element={<LoginPage />}></Route>
           </Routes>
@@ -27,7 +27,7 @@ function App() {
       <div className="appShell">
         <TopBar></TopBar>
         <main className="appMain">
-          <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']}/>
+          <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
           <div className="pageList">
             <Routes>
               <Route path="/" element={<SchoolListPage />} />

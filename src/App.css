@@ -17,9 +17,15 @@ body,
   flex-direction: column;
 }
 
+.appMainLogin {
+  flex: 1;
+  display: grid;
+}
+
 .appMain {
   flex: 1;
-  display: flex;
+  /* 로그인페이지 flex로 인해서 문제가 생겼습니다 ...!! */
+  display: flex; 
 }
 
 .pageList {
