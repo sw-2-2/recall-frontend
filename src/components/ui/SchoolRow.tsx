@@ -1,3 +1,5 @@
+import style from '../styles/SchoolRow.module.css'
+
 type Props = {
   name: string;
   region: string;
@@ -6,17 +8,18 @@ type Props = {
 
 const SchoolRow = ({ name, region, image }: Props) => {
   return (
-    <div className="">
-
-      <div className="">
-        <div className="">{name}</div>
-        <div className="">{region}</div>
-        <button className="">학교 인증하기</button> 
+    <div className={style.schoolRow}>
+      <div className={style.left}>
+        <div className={style.info}>
+          <div className={style.name}>{name}</div>
+          <div className={style.region}>{region}</div>
+        </div>
+        <button className={style.register}>학교 인증하기</button>
         {/* 등록이 되었을 시, 인증 버튼은 사라지도록 설계 */}
       </div>
 
-      <div className="">
-        <img className="" src = {image}></img>
+      <div className={style.right}>
+        <img className={style.schoolImage} src={image}></img>
       </div>
     </div>
   )

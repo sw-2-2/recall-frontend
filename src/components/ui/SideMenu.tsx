@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
 import style from '../styles/SideMenu.module.css'
 
-interface SideMenuProps {
+
+
+type Props = {
   items: string[]
 }
 
-function SideMenu({ items }: SideMenuProps) {
+function SideMenu({ items }: Props) {
   return (
     <aside className={style.sideMenu}>{
     items.map((item) => {

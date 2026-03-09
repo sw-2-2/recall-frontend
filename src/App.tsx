@@ -27,7 +27,7 @@ function App() {
       <div className="appShell">
         <TopBar></TopBar>
         <main className="appMain">
-          <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
+          <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']}/>
           <div className="pageList">
             <Routes>
               <Route path="/" element={<SchoolListPage />} />
