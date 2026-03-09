@@ -20,13 +20,13 @@ function App() {
 
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        {/* <Route path="/schools" element={<SchoolListPage />} />
+        {/* <Route path="/schools" element={<SchoolListPage />} /> */}
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/alumni" element={<AlumniListPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} /> */}
+        {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
 
-      <PageFooter></PageFooter>
+      <PageFooter />
     </div>
   )
 }

@@ -2,7 +2,7 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 92vh;
+    height: 94vh;
 
 }
 
@@ -15,7 +15,7 @@ img {
 }
 
 .LoginPageBasic {
-    width: 130vh;
+    width: 90%;
     margin: 0 auto;
     max-width: 130vh;
     height: 100%;
@@ -27,6 +27,13 @@ img {
     justify-content: space-between;
 }
 
-.LoginPageText {}
+.LoginPageText {
+    font-size: 32px;
+    line-height: 200%;
+    text-align: left;
+}
 
-.LoginButton {}
+.LoginButton {
+    text-align: left;
+    padding-left: 6px;
+}
