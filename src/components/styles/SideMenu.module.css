@@ -1,0 +1,13 @@
+.sideMenu {
+    background-color: rgb(188, 187, 186);
+    position: relative;
+    width: 300px;
+}
+
+.menuItem {
+    margin: 10px 10px;
+}
+
+.menuText {
+    font-size: 30px;
+}

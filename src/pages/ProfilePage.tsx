@@ -8,10 +8,7 @@ import favicon from '../assets/icons/jaewon-favicon.png'
 function ProfilePage() {
   return (
     <section className="">
-      <TopBar />
       <div className="">
-        <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
-
         <main className="">
           <form>
             <section className="">

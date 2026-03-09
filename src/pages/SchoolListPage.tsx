@@ -2,6 +2,7 @@ import SchoolRow from '../components/ui/SchoolRow'
 import SideMenu from '../components/ui/SideMenu'
 import TopBar from '../components/ui/TopBar'
 import Image from '../assets/icons/school_dummy.jpeg'
+import style from '../pages/styles/SchoolListPage.module.css'
 
 const schools = [
   { name: '가고등학교', region: '인천', image: Image },
@@ -13,11 +14,8 @@ const schools = [
 function SchoolListPage() {
   return (
     <div>
-      <TopBar />
-      <div className="">
-        <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
-
-        <main className="">
+      <div className={style.mainContainer}>
+        <main className={style.mainContainer}>
           {schools.map((school) => (
             <SchoolRow key={school.name} name={school.name} region={school.region} image={school.image} />
           ))}

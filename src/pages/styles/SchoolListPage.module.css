@@ -1,0 +1,13 @@
+.mainContainer {
+    display: flex;
+}
+
+.main {
+    flex: 1 0 auto;
+}
+
+
+.wrap {
+
+}
+
