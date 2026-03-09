@@ -1,8 +1,6 @@
 .footer {
     background-color: black;
-    width: 100%;
-    max-width: 71.25rem;
-    margin: 0 auto;
+    color:darkgray;
     padding: 1.25rem 1.5rem;
     display: flex;
     align-items: center;

@@ -1,15 +1,12 @@
-import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import AlumniListPage from './pages/AlumniListPage'
 import LoginPage from './pages/LoginPage'
 import ProfilePage from './pages/ProfilePage'
-import SchoolListPage from './pages/SchoolListPage'
-import TopBar from './components/ui/TopBar'
 import PageFooter from './components/ui/PageFooter'
 
 function App() {
   return (
-    <div className="">
+    <div className="appShell">
       {/* <TopBar></TopBar>
       <nav className="">
         <NavLink to="/">로그인</NavLink>
@@ -18,14 +15,15 @@ function App() {
         <NavLink to="/alumni">동창 리스트</NavLink>
       </nav> */}
 
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        {/* <Route path="/schools" element={<SchoolListPage />} /> */}
-        <Route path="/profile" element={<ProfilePage />} />
-        {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
-        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-      </Routes>
-
+      <main className="appMain">
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          {/* <Route path="/schools" element={<SchoolListPage />} /> */}
+          <Route path="/profile" element={<ProfilePage />} />
+          {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+        </Routes>
+      </main>
       <PageFooter />
     </div>
   )

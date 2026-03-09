@@ -3,7 +3,25 @@
   color: #1f1f1f;
 }
 
+html,
+body,
 #root {
+  height: 100%;
   margin: 0;
   padding: 0;
+}
+
+.appShell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.appMain {
+  flex: 1;
+  display: flex;
+}
+
+.appMain > * {
+  flex: 1;
 }
