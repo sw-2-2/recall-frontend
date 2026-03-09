@@ -10,20 +10,20 @@ import PageFooter from './components/ui/PageFooter'
 function App() {
   return (
     <div className="">
-      <TopBar></TopBar>
+      {/* <TopBar></TopBar>
       <nav className="">
         <NavLink to="/">로그인</NavLink>
         <NavLink to="/schools">학교 리스트</NavLink>
         <NavLink to="/profile">프로필</NavLink>
         <NavLink to="/alumni">동창 리스트</NavLink>
-      </nav>
+      </nav> */}
 
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/schools" element={<SchoolListPage />} />
+        {/* <Route path="/schools" element={<SchoolListPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/alumni" element={<AlumniListPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
 
       <PageFooter></PageFooter>

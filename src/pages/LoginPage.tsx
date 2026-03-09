@@ -1,3 +1,7 @@
+
+import style from './styles/LoginPage.module.css'
+import kakaoLoginImg from '../assets/images/kakao_login_large_wide.png'
+
 function LoginPage() {
   return (
     <section className="">
@@ -8,7 +12,9 @@ function LoginPage() {
 
         <div className="">
           <span>LOGIN</span>
-          <button type="button">카카오 로고 카카오 로그인</button>
+          <button type="button">
+            <img src={kakaoLoginImg} alt='카카오 로그인'/>
+          </button>
         </div>
       </div>
     </section>
