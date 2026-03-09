@@ -7,15 +7,3 @@
   margin: 0;
   padding: 0;
 }
-
-body {
-  background: #3f3f3f;
-}
-
-button {
-  border: 0;
-  background: #e5e5e5;
-  padding: 6px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}

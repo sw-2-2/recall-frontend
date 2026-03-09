@@ -1,4 +1,32 @@
-button {
-    margin: 0;
-    padding: 0;
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 92vh;
+
 }
+
+button {
+    cursor: pointer;
+}
+
+img {
+    width: 30vh;
+}
+
+.LoginPageBasic {
+    width: 130vh;
+    margin: 0 auto;
+    max-width: 130vh;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.LoginPageText {}
+
+.LoginButton {}
