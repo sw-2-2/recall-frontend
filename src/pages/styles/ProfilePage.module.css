@@ -2,6 +2,7 @@
     border-width: 0px 0px 1px;
     border-style: solid;
     border-color: #dddddd;
+    margin: 5%;
 }
 
 .profileEdit {
@@ -15,8 +16,11 @@
 
 .profilePhoto {
     border-radius: 50%;
+    width: 100px;
 }
 
-.SaveProfile {
+.saveProfile {
     padding-left: calc(90% - 0%);
+    margin-bottom: 20px;
 }
+

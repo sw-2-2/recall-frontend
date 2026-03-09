@@ -15,7 +15,7 @@ function ProfilePage() {
               <div>내 프로필 수정</div>
               <div className={style.profileEdit}>
                 <span>
-                  <img className={style.profilePhoto} src={favicon} style={{ width: '100px' }} />
+                  <img className={style.profilePhoto} src={favicon} />
                   <div>
                     <input type="file" accept='image/*' />
                   </div>
@@ -40,31 +40,33 @@ function ProfilePage() {
                   </div>
                 </span>
               </div>
-                <div className={style.SaveProfile}>
-                  <button type="submit">저장</button>
-                </div>
-                
+              <div className={style.saveProfile}>
+                <button type="submit" value='saveProfile'>저장</button>
+              </div>
+
             </section>
           </form>
-          
+
           <section className={style.sectionDivider}>
             <h3>학교 등록</h3>
             <p>내 동창을 찾으려면 내 학교를 등록하면 더 정확해요</p>
 
-            <div className="">
+            <div className={style.schoolResister}>
               <SchoolAdd name='초등학교' />
               <SchoolAdd name='중학교' />
               <SchoolAdd name='고등학교' />
             </div>
 
-            <div className="">
-              <button type="submit">저장</button>
+            <div className={style.saveProfile}>
+              <button type="submit" value='schoolResister'>저장</button>
             </div>
           </section>
 
           <section className={style.sectionDivider}>
             <span>계정</span>
-            <button type="button">로그아웃</button>
+            <div className={style.saveProfile}>
+              <button type="submit" value='logout'>로그아웃</button>
+            </div>
           </section>
         </main>
       </div>
