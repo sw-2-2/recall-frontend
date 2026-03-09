@@ -22,6 +22,6 @@ body,
   display: flex;
 }
 
-.appMain > * {
-  flex: 1;
+.pageList {
+  flex: 1 0 auto;
 }

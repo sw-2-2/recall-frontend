@@ -9,13 +9,25 @@ const schools = [
   { name: '나고등학교', region: '인천', image: Image },
   { name: '다고등학교', region: '인천', image: Image },
   { name: '라고등학교', region: '인천', image: Image },
+    { name: '가고등학교', region: '인천', image: Image },
+  { name: '나고등학교', region: '인천', image: Image },
+  { name: '다고등학교', region: '인천', image: Image },
+  { name: '라고등학교', region: '인천', image: Image },
+    { name: '가고등학교', region: '인천', image: Image },
+  { name: '나고등학교', region: '인천', image: Image },
+  { name: '다고등학교', region: '인천', image: Image },
+  { name: '라고등학교', region: '인천', image: Image },
+    { name: '가고등학교', region: '인천', image: Image },
+  { name: '나고등학교', region: '인천', image: Image },
+  { name: '다고등학교', region: '인천', image: Image },
+  { name: '라고등학교', region: '인천', image: Image },
 ]
 
 function SchoolListPage() {
   return (
     <div>
       <div className={style.mainContainer}>
-        <main className={style.mainContainer}>
+        <main className={style.main}>
           {schools.map((school) => (
             <SchoolRow key={school.name} name={school.name} region={school.region} image={school.image} />
           ))}
