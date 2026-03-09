@@ -27,7 +27,6 @@ function App() {
       <div className="appShell">
         <TopBar></TopBar>
         <main className="appMain">
-<<<<<<< Updated upstream
           <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
           <div className="pageList">
             <Routes>
@@ -38,16 +37,6 @@ function App() {
               {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
             </Routes>
           </div>
-=======
-        <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
-          <Routes>
-            <Route path="/" element={<SchoolListPage />} />
-            {/* <Route path="/schools" element={<SchoolListPage />} /> */}
-            <Route path="/profile" element={<ProfilePage />} />
-            {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
-            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-          </Routes>
->>>>>>> Stashed changes
         </main>
         <PageFooter />
       </div>
