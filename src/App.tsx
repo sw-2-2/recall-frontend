@@ -6,10 +6,12 @@ import PageFooter from './components/ui/PageFooter'
 import SchoolListPage from './pages/SchoolListPage'
 import SideMenu from './components/ui/SideMenu'
 import TopBar from './components/ui/TopBar'
+import { useState } from 'react'
 
 function App() {
-  let login = false;
+  let login = true;
 
+  const [value, setValue] = useState(1);
   if (!login) {
     return (
       <div className='appShell'>
@@ -27,10 +29,11 @@ function App() {
       <div className="appShell">
         <TopBar></TopBar>
         <main className="appMain">
-          <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} />
+          <SideMenu items={['초등학교', '중학교', '고등학교', '내 프로필']} 
+          setValue = {setValue}/>
           <div className="pageList">
             <Routes>
-              <Route path="/" element={<SchoolListPage />} />
+              <Route path="/" element={<SchoolListPage value = {value} />} />
               {/* <Route path="/schools" element={<SchoolListPage />} /> */}
               <Route path="/profile" element={<ProfilePage />} />
               {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
