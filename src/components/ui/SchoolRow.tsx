@@ -1,27 +1,30 @@
 import style from '../styles/SchoolRow.module.css'
+import fallbackImage from '../../assets/icons/school_dummy.jpeg'
+import type { School } from '../../types/school'
 
 type Props = {
-  name: string;
-  region: string;
-  image: string;
+  school: School
+  selected: boolean
+  onSelect: (schoolId: number) => void
 }
 
-const SchoolRow = ({ name, region, image }: Props) => {
+const SchoolRow = ({ school, selected, onSelect }: Props) => {
   return (
-    <div className={style.schoolRow}>
-      <div className={style.left}>
-        <div className={style.info}>
-          <div className={style.name}>{name}</div>
-          <div className={style.region}>{region}</div>
-        </div>
-        <button className={style.register}>학교 인증하기</button>
-        {/* 등록이 되었을 시, 인증 버튼은 사라지도록 설계 */}
+    <button
+      type="button"
+      className={`${style.schoolRow} ${selected ? style.selected : ''}`}
+      onClick={() => onSelect(school.id)}
+    >
+      <img
+        className={style.schoolImage}
+        src={school.imageUrl ?? fallbackImage}
+        alt={school.name}
+      />
+      <div className={style.info}>
+        <div className={style.name}>{school.name}</div>
+        <div className={style.region}>{school.address}</div>
       </div>
-
-      <div className={style.right}>
-        <img className={style.schoolImage} src={image}></img>
-      </div>
-    </div>
+    </button>
   )
 }
 

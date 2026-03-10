@@ -1,6 +1,7 @@
 :root {
   font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   color: #1f1f1f;
+  background-color: #f4f7fb;
 }
 
 html,
@@ -15,6 +16,7 @@ body,
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(180deg, #f8fbff 0%, #f2f6fb 65%, #eef3f8 100%);
 }
 
 .appMainLogin {
@@ -24,10 +26,22 @@ body,
 
 .appMain {
   flex: 1;
-  /* 로그인페이지 flex로 인해서 문제가 생겼습니다 ...!! */
-  display: flex; 
+  display: flex;
+  min-height: 0;
 }
 
 .pageList {
   flex: 1 0 auto;
+  min-width: 0;
+  padding: 1rem;
+}
+
+@media (max-width: 980px) {
+  .appMain {
+    flex-direction: column;
+  }
+
+  .pageList {
+    padding: 0.75rem;
+  }
 }

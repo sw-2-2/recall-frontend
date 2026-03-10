@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import LoginPage from './pages/LoginPage'
 import ProfilePage from './pages/ProfilePage'
@@ -7,55 +7,70 @@ import SchoolListPage from './pages/SchoolListPage'
 import SideMenu from './components/ui/SideMenu'
 import TopBar from './components/ui/TopBar'
 import { useEffect, useState } from 'react'
+import type { SchoolType } from './types/school'
+
+function isSchoolType(value: string | null): value is SchoolType {
+  return value === 'elementary' || value === 'middle' || value === 'high'
+}
 
 function App() {
-  let login = true;
+  const isLoggedIn = true
+  const [selectedType, setSelectedType] = useState<SchoolType>(() => {
+    const saved = localStorage.getItem('menuType')
+    return isSchoolType(saved) ? saved : 'elementary'
+  })
 
-  const [value, setValue] = useState<number>(() => {
-    const saved = localStorage.getItem("menu");
-    return saved ? Number(saved) : 1;
-  });
-
-  console.log(value);
+  const [keyword, setKeyword] = useState('')
 
   useEffect(() => {
-    localStorage.setItem("menu", value.toString())
-  }, [value]);
+    localStorage.setItem('menuType', selectedType)
+  }, [selectedType])
 
+  const handleResetHome = () => {
+    setSelectedType('elementary')
+    setKeyword('')
+  }
 
-  if (!login) {
+  if (!isLoggedIn) {
     return (
       <div className='appShell'>
         <div className='appMainLogin'>
           <Routes>
-            <Route path="/" element={<LoginPage />}></Route>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
         <PageFooter />
       </div>
     )
   }
-  else {
 
-    return (
-      <div className="appShell">
-        <TopBar setValue={setValue} />
-        <main className="appMain">
-          <SideMenu value={value} setValue={setValue} />
-          <div className="pageList">
-            <Routes>
-              <Route path="/" element={<SchoolListPage value={value} />} />
-              {/* <Route path="/schools" element={<SchoolListPage />} /> */}
-              <Route path="/profile" element={<ProfilePage />} />
-              {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
-              {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-            </Routes>
-          </div>
-        </main>
-        <PageFooter />
-      </div>
-    )
-  }
+  return (
+    <div className="appShell">
+      <TopBar
+        keyword={keyword}
+        onKeywordChange={setKeyword}
+        onResetHome={handleResetHome}
+      />
+      <main className="appMain">
+        <SideMenu
+          selectedType={selectedType}
+          onTypeChange={(type) => {
+            setSelectedType(type)
+            setKeyword('')
+          }}
+        />
+        <div className="pageList">
+          <Routes>
+            <Route path="/" element={<SchoolListPage selectedType={selectedType} keyword={keyword} />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </main>
+      <PageFooter />
+    </div>
+  )
 }
 
 export default App
