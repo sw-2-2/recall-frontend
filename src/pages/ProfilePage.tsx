@@ -1,14 +1,13 @@
 import SchoolAdd from '../components/ui/SchoolAdd'
 import favicon from '../assets/icons/jaewon-favicon.png'
 import style from './styles/ProfilePage.module.css'
-import type { FormEvent } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getProfiles, postUserProfile } from '../apis/profileEdit'
 
 type ProfilePayload = {
   name: string
   phone: string
-  email: string
-  region: string
+  address: string
   profileImage: File | null
 }
 
@@ -31,16 +30,24 @@ type SchoolPayload = {
 }
 
 function ProfilePage() {
+  const { data: members = [] } = useQuery({
+    queryKey: ['profileFetch'],
+    queryFn: getProfiles,
+  })
+  const currentMember = members[0]
   const queryClient = useQueryClient()
 
   const profileMutation = useMutation({
     mutationFn: async (payload: ProfilePayload) => {
-      // TODO: 백엔드 연동 시 실제 API로 교체
-      await Promise.resolve()
-      return payload
+      return postUserProfile({
+        name: payload.name,
+        phone: payload.phone,
+        address: payload.address,
+        schools: [],
+      })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myProfile'] })
+      queryClient.invalidateQueries({ queryKey: ['profileFetch'] })
     },
   })
 
@@ -50,7 +57,7 @@ function ProfilePage() {
       return payload
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mySchools'] })
+      queryClient.invalidateQueries({ queryKey: ['SchoolUpdate'] })
     },
   })
 
@@ -60,21 +67,20 @@ function ProfilePage() {
     return value instanceof File && value.size > 0 ? value : null
   }
 
-  const handleProfileSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleProfileSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
     const formData = new FormData(e.currentTarget)
     const payload: ProfilePayload = {
       name: getString(formData, 'name'),
       phone: getString(formData, 'phone'),
-      email: getString(formData, 'email'),
-      region: getString(formData, 'region'),
+      address: getString(formData, 'address'),
       profileImage: getFile(formData, 'profileImage'),
     }
     profileMutation.mutate(payload)
   }
 
-  const handleSchoolSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSchoolSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
     const formData = new FormData(e.currentTarget)
     const payload: SchoolPayload = {
       elementary: {
@@ -116,24 +122,42 @@ function ProfilePage() {
             <div className="">
               <div>
                 <label>이름 :
-                  <input type='text' id='name' name='name' placeholder='이름을 입력해주세요.' />
+                  <input
+                    type='text'
+                    id='name'
+                    name='name'
+                    placeholder='이름을 입력해주세요.'
+                    defaultValue={currentMember?.name ?? ''}
+                  />
                 </label>
               </div>
               <div>
                 <label>전화번호 :
-                  <input type='tel' id='phone' name='phone' placeholder='전화번호를 입력해주세요.' />
+                  <input
+                    type='tel'
+                    id='phone'
+                    name='phone'
+                    placeholder='전화번호를 입력해주세요.'
+                    defaultValue={currentMember?.phone ?? ''}
+                  />
                 </label>
               </div>
               <div>
                 <label>
                   이메일 :
-                  <input type='email' id='email' name='email' placeholder='이메일을 입력해주세요.' />
+                  <input type='email' id='email' name='email' placeholder='이메일을 입력해주세요.' disabled />
                 </label>
               </div>
               <div>
                 <label>
                   지역 :
-                  <input type='text' id='region' name='region' placeholder='지역을 입력해주세요.' />
+                  <input
+                    type='text'
+                    id='address'
+                    name='address'
+                    placeholder='지역을 입력해주세요.'
+                    defaultValue={currentMember?.address ?? ''}
+                  />
                 </label>
               </div>
             </div>
@@ -162,14 +186,12 @@ function ProfilePage() {
           </div>
         </section>
       </form>
-      <form>
-        <section className={style.sectionDivider}>
-          <div className={style.sectionTitle}>계정</div>
-          <div className={style.saveProfile}>
-            <button type='button' onClick={handleLogout}>로그아웃</button>
-          </div>
-        </section>
-      </form>
+      <section className={style.sectionDivider}>
+        <div className={style.sectionTitle}>계정</div>
+        <div className={style.saveProfile}>
+          <button type='button' onClick={handleLogout}>로그아웃</button>
+        </div>
+      </section>
     </div>
   )
 }
