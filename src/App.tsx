@@ -16,7 +16,9 @@ function App() {
     return saved ? Number(saved) : 1;
   });
 
-    useEffect(() => {
+  console.log(value);
+
+  useEffect(() => {
     localStorage.setItem("menu", value.toString())
   }, [value]);
 
@@ -44,7 +46,7 @@ function App() {
             <Routes>
               <Route path="/" element={<SchoolListPage value={value} />} />
               {/* <Route path="/schools" element={<SchoolListPage />} /> */}
-              <Route path="/profile" element={<ProfilePage value={value} setValue={setValue} />} />
+              <Route path="/profile" element={<ProfilePage />} />
               {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
               {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
             </Routes>

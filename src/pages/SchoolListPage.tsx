@@ -55,33 +55,40 @@ const high_schools = [
   { name: '하고등학교', region: '인천', image: Image },
 ]
 
+type School = {
+  name: string
+  region: string
+  image: string
+}
+
 type Props = {
-  value: number | undefined;
+  value: number
 }
 
 
-function SchoolListPage({ value }: Props) {
-  let schools = [];
 
-  if (value == 1)
-    schools = element_schools;
-  else if (value ==  2)
-    schools = middle_schools;
-  else if (value == 3)
-    schools = high_schools;
-  else {
-    return;
+function SchoolListPage({ value }: Props) {
+
+  const schoolMap: Record<number, School[]> = {
+    1: element_schools,
+    2: middle_schools,
+    3: high_schools,
   }
 
+  const schools = schoolMap[value] ?? []
+
   return (
-    <div>
-      <div className={style.mainContainer}>
-        <main className={style.main}>
-          {schools.map((school) => (
-            <SchoolRow key={school.name} name={school.name} region={school.region} image={school.image} />
-          ))}
-        </main>
-      </div>
+    <div className={style.mainContainer}>
+      <main className={style.main}>
+        {schools.map((school) => (
+          <SchoolRow
+            key={school.name}
+            name={school.name}
+            region={school.region}
+            image={school.image}
+          />
+        ))}
+      </main>
     </div>
   )
 }

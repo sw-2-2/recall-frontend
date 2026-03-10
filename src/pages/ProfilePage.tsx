@@ -29,17 +29,9 @@ type SchoolPayload = {
     certificate: File | null
   }
 }
-type Props = {
-  value: number | undefined
-  setValue: (type: number) => void
-}
 
-function ProfilePage({value, setValue} : Props) {
+function ProfilePage() {
 
-  if(value != 4)
-    useEffect(() => {
-    setValue(4);
-  }, []);
 
 
   const { data: members = [] } = useQuery({
