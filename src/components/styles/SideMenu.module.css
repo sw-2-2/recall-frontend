@@ -9,14 +9,15 @@
     padding: 30px 10px;
 }
 
-.menuItem:hover {
+.menuItem:hover:not(.active) {
     background: silver;
-}
-
-.menuItem:focus {
-    background: black;
 }
 
 .menuText {
     font-size: 30px;
+}
+
+.active {
+  background-color: #eee;
+  font-weight: bold;
 }

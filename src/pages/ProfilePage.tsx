@@ -3,6 +3,7 @@ import favicon from '../assets/icons/jaewon-favicon.png'
 import style from './styles/ProfilePage.module.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getProfiles, postUserProfile } from '../apis/profileEdit'
+import { useEffect } from 'react'
 
 type ProfilePayload = {
   name: string
@@ -28,8 +29,19 @@ type SchoolPayload = {
     certificate: File | null
   }
 }
+type Props = {
+  value: number | undefined
+  setValue: (type: number) => void
+}
 
-function ProfilePage() {
+function ProfilePage({value, setValue} : Props) {
+
+  if(value != 4)
+    useEffect(() => {
+    setValue(4);
+  }, []);
+
+
   const { data: members = [] } = useQuery({
     queryKey: ['profileFetch'],
     queryFn: getProfiles,

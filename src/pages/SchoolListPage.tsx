@@ -1,4 +1,6 @@
 import SchoolRow from '../components/ui/SchoolRow'
+import SideMenu from '../components/ui/SideMenu'
+import TopBar from '../components/ui/TopBar'
 import Image from '../assets/icons/school_dummy.jpeg'
 import style from '../pages/styles/SchoolListPage.module.css'
 
@@ -35,6 +37,7 @@ const middle_schools = [
   { name: '파중학교', region: '인천', image: Image },
   { name: '하중학교', region: '인천', image: Image },
 ]
+
 const high_schools = [
   { name: '가고등학교', region: '인천', image: Image },
   { name: '나고등학교', region: '인천', image: Image },
@@ -53,20 +56,22 @@ const high_schools = [
 ]
 
 type Props = {
-  value: number;
+  value: number | undefined;
 }
 
 
 function SchoolListPage({ value }: Props) {
-
   let schools = [];
 
   if (value == 1)
     schools = element_schools;
   else if (value ==  2)
     schools = middle_schools;
-  else
+  else if (value == 3)
     schools = high_schools;
+  else {
+    return;
+  }
 
   return (
     <div>

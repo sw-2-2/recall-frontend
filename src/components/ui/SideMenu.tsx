@@ -1,49 +1,73 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import style from '../styles/SideMenu.module.css'
 
 
 
 type Props = {
-  items: string[]
-  setValue: (tyupe: number) => void
+  value: number | undefined
+  setValue: (type: number) => void
 }
 
-function SideMenu({ items, setValue }: Props) {
-  return (
-    <aside className={style.sideMenu}>{
-    items.map((item) => {
-      let sort;
-      if(item == '초등학교')
-        sort = 1;
-      else if(item == '중학교')
-        sort = 2;
-      else if(item == '고등학교')
-        sort = 3;
-      else
-        sort = 4;
+function SideMenu({ value, setValue }: Props) {
 
-      if (sort < 4) {
-      return (
-      <Link to='/'>
-        <button key={item} type="button" className={style.menuItem}
-          onClick={() => setValue(sort)}>
-        <p className={style.menuText}>{item}</p>
-      </button>
-    </Link>
-  )
-} else {
-  return (
-    <Link to='/profile'>
-      <button key={item} type="button" className={style.menuItem}>
-        <p className={style.menuText}>{item}</p>
-      </button>
-    </Link>
-  )
-}
-    })
+  const location = useLocation()
+  const path = location.pathname
+
+  console.log(value);
+  // 현재 상태가 초, 중, 고를 가르킬 때
+  if (path == '/'){
+    return (
+      <aside className={style.sideMenu}>
+        <button key={'초등학교'} type="button" className={`${style.menuItem} ${value === 1 ? style.active : ''}`}
+          onClick={() => setValue(1)}>
+          <p className={style.menuText}>{'초등학교'}</p>
+        </button>
+        <button key={'중학교'} type="button" className={`${style.menuItem} ${value === 2 ? style.active : ''}`}
+          onClick={() => setValue(2)}>
+          <p className={style.menuText}>{'중학교'}</p>
+        </button>
+        <button key={'고등학교'} type="button" className={`${style.menuItem} ${value === 3 ? style.active : ''}`}
+          onClick={() => setValue(3)}>
+          <p className={style.menuText}>{'고등학교'}</p>
+        </button>
+        <Link to='/profile'>
+          <button key={'내 프로필'} type="button" className={`${style.menuItem} ${value === 4 ? style.active : ''}`}
+            onClick={() => setValue(4)}>
+            <p className={style.menuText}>{'내 프로필'}</p>
+          </button>
+        </Link>
+      </aside >
+    )
   }
-    </aside >
-  )
+  // 현재 상태가 내 프로필일 때
+  else {
+    return (
+      <aside className={style.sideMenu}>
+        <Link to='/'>
+          <button key={'초등학교'} type="button" className={`${style.menuItem} ${value === 1 ? style.active : ''}`}
+            onClick={() => setValue(1)}>
+            <p className={style.menuText}>{'초등학교'}</p>
+          </button>
+        </Link>
+        <Link to='/'>
+          <button key={'중학교'} type="button" className={`${style.menuItem} ${value === 2 ? style.active : ''}`}
+            onClick={() => setValue(2)}>
+            <p className={style.menuText}>{'중학교'}</p>
+          </button>
+        </Link>
+        <Link to='/'>
+          <button key={'고등학교'} type="button" className={`${style.menuItem} ${value === 3 ? style.active : ''}`}
+            onClick={() => setValue(3)}>
+            <p className={style.menuText}>{'고등학교'}</p>
+          </button>
+        </Link>
+        <button key={'내 프로필'} type="button" className={`${style.menuItem} ${value === 4 ? style.active : ''}`}
+          onClick={() => setValue(4)}>
+          <p className={style.menuText}>{'내 프로필'}</p>
+        </button>
+      </aside >
+    )
+  }
 }
 
 export default SideMenu

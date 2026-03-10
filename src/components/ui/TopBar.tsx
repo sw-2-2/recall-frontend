@@ -2,10 +2,16 @@ import style from "../styles/TopBar.module.css"
 import graduationIcon from "../../assets/icons/graduation-icon.png"
 import { Link } from "react-router-dom";
 
-const TopBar = () => {
+type Props = {
+  setValue: (type: number) => void
+}
+
+const TopBar = ({setValue}: Props) => {
   return (
     <div className={style.HeaderDiv}>
-      <Link to={'/'} className={style.MainButton} style={{
+      <Link to={'/'} className={style.MainButton} 
+      onClick = {() => setValue(1)}
+      style={{
         color: "black",
         textDecorationLine: "none"
       }}>
