@@ -1,48 +1,88 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import style from '../styles/SideMenu.module.css'
 
-
-
 type Props = {
-  items: string[]
-  setValue: (tyupe: number) => void
+  value: number
+  setValue: (type: number) => void
 }
 
-function SideMenu({ items, setValue }: Props) {
-  return (
-    <aside className={style.sideMenu}>{
-    items.map((item) => {
-      let sort;
-      if(item == '초등학교')
-        sort = 1;
-      else if(item == '중학교')
-        sort = 2;
-      else if(item == '고등학교')
-        sort = 3;
-      else
-        sort = 4;
+function SideMenu({ value, setValue }: Props) {
 
-      if (sort < 4) {
-      return (
-      <Link to='/'>
-        <button key={item} type="button" className={style.menuItem}
-          onClick={() => setValue(sort)}>
-        <p className={style.menuText}>{item}</p>
-      </button>
-    </Link>
-  )
-} else {
+  const location = useLocation()
+  const path = location.pathname
+
+  const isProfile = path === '/profile'
+
   return (
-    <Link to='/profile'>
-      <button key={item} type="button" className={style.menuItem}>
-        <p className={style.menuText}>{item}</p>
-      </button>
-    </Link>
-  )
-}
-    })
-  }
-    </aside >
+    <aside className={style.sideMenu}>
+
+      {isProfile ? (
+        <Link to="/" onClick={() => setValue(1)}>
+          <button
+            type="button"
+            className={`${style.menuItem}`}
+          >
+            <p className={style.menuText}>초등학교</p>
+          </button>
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className={`${style.menuItem} ${value === 1 ? style.active : ''}`}
+          onClick={() => setValue(1)}
+        >
+          <p className={style.menuText}>초등학교</p>
+        </button>
+      )}
+
+      {isProfile ? (
+        <Link to="/" onClick={() => setValue(2)}>
+          <button
+            type="button"
+            className={`${style.menuItem}`}
+          >
+            <p className={style.menuText}>중학교</p>
+          </button>
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className={`${style.menuItem} ${value === 2 ? style.active : ''}`}
+          onClick={() => setValue(2)}
+        >
+          <p className={style.menuText}>중학교</p>
+        </button>
+      )}
+
+      {isProfile ? (
+        <Link to="/" onClick={() => setValue(3)}>
+          <button
+            type="button"
+            className={`${style.menuItem}`}
+          >
+            <p className={style.menuText}>고등학교</p>
+          </button>
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className={`${style.menuItem} ${value === 3 ? style.active : ''}`}
+          onClick={() => setValue(3)}
+        >
+          <p className={style.menuText}>고등학교</p>
+        </button>
+      )}
+
+      <Link to="/profile">
+        <button
+          type="button"
+          className={`${style.menuItem} ${isProfile  ? style.active : ''}`}
+        >
+          <p className={style.menuText}>내 프로필</p>
+        </button>
+      </Link>
+
+    </aside>
   )
 }
 
