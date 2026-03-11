@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react'
 
 function App() {
   let login = true;
-
   const [value, setValue] = useState<number>(() => {
     const saved = localStorage.getItem("menu");
     return saved ? Number(saved) : 1;
@@ -45,10 +44,7 @@ function App() {
           <div className="pageList">
             <Routes>
               <Route path="/" element={<SchoolListPage value={value} />} />
-              {/* <Route path="/schools" element={<SchoolListPage />} /> */}
               <Route path="/profile" element={<ProfilePage />} />
-              {/* <Route path="/alumni" element={<AlumniListPage />} /> */}
-              {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
             </Routes>
           </div>
         </main>
