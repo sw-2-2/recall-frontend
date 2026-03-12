@@ -1,5 +1,5 @@
 import { apiRequest } from './client'
-import type { SchoolMember, SchoolSummary, SchoolType } from '../types/school'
+import type { SchoolSummary, SchoolType } from '../types/school'
 
 type SchoolListResponse = {
   schools: SchoolSummary[]
@@ -29,4 +29,3 @@ export const searchSchools = ({ type, keyword }: SchoolSearchParams) =>
       keyword,
     })}`,
   )
-
