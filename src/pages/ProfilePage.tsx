@@ -2,8 +2,10 @@ import SchoolAdd from '../components/ui/SchoolAdd'
 import favicon from '../assets/icons/jaewon-favicon.png'
 import style from './styles/ProfilePage.module.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getProfiles, postUserProfile } from '../apis/profileEdit'
+import { getProfiles, postUserProfile } from '../api/profileEdit'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { signOut } from '../utils/auth'
 
 type ProfilePayload = {
   name: string
@@ -34,6 +36,7 @@ type SchoolPayload = {
 }
 
 function ProfilePage() {
+  const navigate = useNavigate()
 
   const { data: members = [] } = useQuery({
     queryKey: ['profileFetch'],
@@ -144,7 +147,8 @@ function ProfilePage() {
 
   // 로그아웃로직. 나중에 업데이트예정
   const handleLogout = () => {
-    console.log('logout')
+    signOut()
+    navigate('/login', { replace: true })
   }
 
   return (

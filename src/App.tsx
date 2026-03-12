@@ -1,57 +1,33 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import LoginPage from './pages/LoginPage'
+import { DEFAULT_SCHOOL_PATH } from './constants/schools'
+import ProtectedRoute from './components/routes/ProtectedRoute'
+import PublicOnlyRoute from './components/routes/PublicOnlyRoute'
+import AuthLayout from './components/layouts/AuthLayout'
+import ServiceLayout from './components/layouts/ServiceLayout'
+import MainPage from './pages/MainPage'
 import ProfilePage from './pages/ProfilePage'
-import PageFooter from './components/ui/PageFooter'
-import SchoolListPage from './pages/SchoolListPage'
-import SideMenu from './components/ui/SideMenu'
-import TopBar from './components/ui/TopBar'
-import { useEffect, useState } from 'react'
 
 function App() {
-  let login = true;
-  const [value, setValue] = useState<number>(() => {
-    const saved = localStorage.getItem("menu");
-    return saved ? Number(saved) : 1;
-  });
+  return (
+    <Routes>
+      <Route element={<PublicOnlyRoute />}>
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+        </Route>
+      </Route>
 
-  console.log(value);
+      <Route element={<ProtectedRoute />}>
+        <Route element={<ServiceLayout />}>
+          <Route path={DEFAULT_SCHOOL_PATH} element={<MainPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+      </Route>
 
-  useEffect(() => {
-    localStorage.setItem("menu", value.toString())
-  }, [value]);
-
-
-  if (!login) {
-    return (
-      <div className='appShell'>
-        <div className='appMainLogin'>
-          <Routes>
-            <Route path="/" element={<LoginPage />}></Route>
-          </Routes>
-        </div>
-        <PageFooter />
-      </div>
-    )
-  }
-  else {
-
-    return (
-      <div className="appShell">
-        <TopBar setValue={setValue} />
-        <main className="appMain">
-          <SideMenu value={value} setValue={setValue} />
-          <div className="pageList">
-            <Routes>
-              <Route path="/" element={<SchoolListPage value={value} />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Routes>
-          </div>
-        </main>
-        <PageFooter />
-      </div>
-    )
-  }
+      <Route path="*" element={<Navigate to={DEFAULT_SCHOOL_PATH} replace />} />
+    </Routes>
+  )
 }
 
 export default App

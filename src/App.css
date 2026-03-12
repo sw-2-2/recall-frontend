@@ -1,6 +1,7 @@
 :root {
   font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  color: #1f1f1f;
+  color: #172033;
+  background: linear-gradient(180deg, #f4f7fb 0%, #eef3f7 100%);
 }
 
 html,
@@ -20,14 +21,4 @@ body,
 .appMainLogin {
   flex: 1;
   display: grid;
-}
-
-.appMain {
-  flex: 1;
-  /* 로그인페이지 flex로 인해서 문제가 생겼습니다 ...!! */
-  display: flex; 
-}
-
-.pageList {
-  flex: 1 0 auto;
 }

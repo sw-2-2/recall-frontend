@@ -19,7 +19,7 @@ const SchoolRow = ({ name, region, image }: Props) => {
       </div>
 
       <div className={style.right}>
-        <img className={style.schoolImage} src={image}></img>
+        <img className={style.schoolImage} src={image} alt={`${name} 학교 이미지`} />
       </div>
     </div>
   )
