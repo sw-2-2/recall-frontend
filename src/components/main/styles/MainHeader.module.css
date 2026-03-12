@@ -16,13 +16,6 @@
   letter-spacing: 0.08em;
 }
 
-.title {
-  margin-top: 10px;
-  font-size: clamp(28px, 4vw, 38px);
-  font-weight: 800;
-  color: #172033;
-}
-
 .description {
   margin-top: 12px;
   max-width: 720px;

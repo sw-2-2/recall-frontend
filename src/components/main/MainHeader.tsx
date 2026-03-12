@@ -23,10 +23,9 @@ function MainHeader({
   return (
     <header className={styles.header}>
       <div>
-        <p className={styles.eyebrow}>RE:CALL MAIN</p>
-        <h1 className={styles.title}>학교 메인페이지 기본 구조</h1>
+        <p className={styles.eyebrow}>전국 동창생 커뮤니티 RE:CALL</p>
         <p className={styles.description}>
-          내 학교 상단 고정, 전체 학교 리스트, 선택 학교 상세, 조건부 멤버 조회 구조입니다.
+          찾고 싶은 추억의 학교를 검색해보세요.
         </p>
       </div>
 

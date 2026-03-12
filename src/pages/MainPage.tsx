@@ -21,8 +21,7 @@ function MainPage() {
   const schoolsQuery = useSchools(selectedType)
   const schoolSearchQuery = useSchoolSearch(selectedType, searchKeyword)
 
-  const mySchool =
-    meQuery.data?.schools.find((school) => school.type === selectedType) ?? null
+  const mySchool = meQuery.data?.schools.find((school) => school.type === selectedType) ?? null
 
   const visibleSchools =
     schoolSearchQuery.debouncedKeyword.length >= 1
@@ -39,27 +38,28 @@ function MainPage() {
     null
 
   useEffect(() => {
-    const isSelectedInVisibleList =
-      selectedSchoolId !== null &&
-      visibleSchools.some((school) => school.id === selectedSchoolId)
+    const isSelectedInVisibleList = selectedSchoolId !== null && visibleSchools.some((school) => school.id === selectedSchoolId)
 
+    // 현재 보이는 학교가 있고 그게 아직 visible에 있는거면 그거 그대로 선택
     if (isSelectedInVisibleList) {
       return
     }
-
+    // 선택된 학교가 내 학교가 아니면 내 학교를 기본으로 선택되게.
     if (mySchool && selectedSchoolId !== mySchool.id) {
       setSelectedSchoolId(mySchool.id)
       return
     }
-
+    // 학교선택이 꼬였을 때의 처리. 첫 번째 학교를 포커싱하거나, 첫번째마저 없으면 그냥 선택안되게.
     const nextSchoolId = visibleSchools[0]?.id ?? null
 
+    
     if (selectedSchoolId !== nextSchoolId) {
       setSelectedSchoolId(nextSchoolId)
     }
   }, [mySchool, selectedSchoolId, setSelectedSchoolId, visibleSchools])
 
-  const isMySchoolSelected = Boolean(mySchool && mySchool.id === selectedSchoolId)
+  // 내 학교를 선택했나요?
+  const isMySchoolSelected = mySchool?.id === selectedSchoolId
 
   const membersQuery = useSchoolMembers({
     schoolId: selectedSchoolId,
