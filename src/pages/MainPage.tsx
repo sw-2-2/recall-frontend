@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import styles from './styles/MainPage.module.css'
-import MainHeader from '../components/main/MainHeader'
+import MainHeader from '../components/main/SchoolSearchPannel'
 import SchoolSummaryCard from '../components/main/SchoolSummaryCard'
 import SchoolMembersPanel from '../components/main/SchoolMembersPanel'
 import { schoolLabelMap } from '../constants/schools'
