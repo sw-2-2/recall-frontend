@@ -17,9 +17,10 @@ function MainPage() {
   const selectedSchoolId = useMainPageStore((state) => state.selectedSchoolId)
   const setSelectedSchoolId = useMainPageStore((state) => state.setSelectedSchoolId)
 
-  const meQuery = useMe()
-  const schoolsQuery = useSchools(selectedType)
-  const schoolSearchQuery = useSchoolSearch(selectedType, searchKeyword)
+
+  const meQuery = useMe() // 내 정보와 연결된 학교 조회
+  const schoolsQuery = useSchools(selectedType) //선택된 초중고 타입의 기본학교 목록조회
+  const schoolSearchQuery = useSchoolSearch(selectedType, searchKeyword) // 검색어가 들어오면 학교 검색
 
   const mySchool = meQuery.data?.schools.find((school) => school.type === selectedType) ?? null
 

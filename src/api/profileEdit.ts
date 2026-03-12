@@ -1,3 +1,5 @@
+import { apiRequest } from "./client"
+
 export type Member = {
   id: number
   name: string
@@ -19,12 +21,6 @@ type ExistingSchoolRequest = {
   graduationYear: number
 }
 
-type NewSchoolRequest = {
-  contentType: 'new'
-  name: string
-  type: 'elementary' | 'middle' | 'high'
-  address: string
-}
 
 export type CreateProfileRequest = {
   name: string
@@ -33,13 +29,29 @@ export type CreateProfileRequest = {
   schools: Array<ExistingSchoolRequest | NewSchoolRequest>
 }
 
+type SchoolType = 'elementary' | 'middle' | 'high'
+
+type NewSchoolRequest = {
+  name: string;
+  address?: string;
+  graduationYear: number;
+}
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '')
+
 
 function apiUrl(path: string): string {
   if (!API_BASE_URL) {
     throw new Error('VITE_API_BASE_URL is not set')
   }
   return `${API_BASE_URL}${path}`
+}
+
+export const postNewSchool = (type: SchoolType, payload: NewSchoolRequest) => {
+  return apiRequest(`api/users/schools/${type}/new`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
 }
 
 export async function getProfiles(): Promise<Member[]> {
