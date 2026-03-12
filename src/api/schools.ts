@@ -5,10 +5,6 @@ type SchoolListResponse = {
   schools: SchoolSummary[]
 }
 
-type SchoolMembersResponse = {
-  members: SchoolMember[]
-}
-
 type SchoolListParams = {
   type: SchoolType
 }
@@ -34,7 +30,3 @@ export const searchSchools = ({ type, keyword }: SchoolSearchParams) =>
     })}`,
   )
 
-export const getSchoolMembers = (schoolId: number) =>
-  apiRequest<SchoolMembersResponse>(`/api/schools/${schoolId}/members`, {
-    auth: true,
-  })

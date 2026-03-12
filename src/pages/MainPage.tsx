@@ -61,6 +61,7 @@ function MainPage() {
   // 내 학교를 선택했나요?
   const isMySchoolSelected = mySchool?.id === selectedSchoolId
 
+  // 선택된 학교의 멤버 목록을 가져오는 훅 ㅎ출
   const membersQuery = useSchoolMembers({
     schoolId: selectedSchoolId,
     enabled: isMySchoolSelected,
