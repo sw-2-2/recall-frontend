@@ -1,5 +1,5 @@
-import style from '../../pages/styles/ProfilePage.module.css'
-import schoolDummy from '../../assets/icons/school_dummy.jpeg'
+import style from './SchoolVerificationCard.module.css'
+import schoolDummy from '../../assets/images/school_dummy.jpeg'
 import type { SchoolForm, VerifiedSchool } from '../../types/profile.ts'
 
 type Props = {
@@ -41,12 +41,15 @@ function SchoolVerificationCard({
             {/* 인증이 된 경우: 학교 정보 카드 / 인증이 안 된 경우: 안내 문구 또는 카드 내부 폼 */}
             {verifiedSchool ? (
                 <div className={style.verifiedSchoolCard}>
-                    <img
-                        src={schoolDummy}
-                        alt={`${verifiedSchool.name} 졸업증명서`}
-                        className={style.certificateImage}
-                    />
-                    <div>
+                    <div className={style.schoolImageWrapper}>
+                        <img
+                            src={schoolDummy}
+                            alt={`${verifiedSchool.name} 졸업증명서`}
+                            className={style.certificateImage}
+                        />
+                    </div>
+
+                    <div className={style.schoolInfoBlock}>
                         <p className={style.schoolName}>{verifiedSchool.name}</p>
                         <p className={style.schoolMeta}>{verifiedSchool.address}</p>
                         <p className={style.schoolMeta}>
