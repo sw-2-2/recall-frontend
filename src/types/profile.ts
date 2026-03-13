@@ -47,3 +47,38 @@ export function createInitialSchoolForm(): SchoolForm {
     certificate: null,
   }
 }
+
+
+
+// 프런트용 프로필 
+export type MemberProfile = {
+  id: number
+  name: string
+  phone: string
+  address: string
+  profileImageUrl: string | null
+}
+
+// 업데이트 용
+export type UpdateProfileInput = {
+  name: string
+  phone: string
+  address: string
+}
+
+// 기존 학교 검색 결과 타입
+export type SchoolRecord = {
+  id: number
+  type: SchoolType
+  name: string
+  address: string
+}
+
+// 학교 인증 저장용 입력 타입
+export type SchoolVerificationInput = {
+  type: SchoolType
+  region: string
+  schoolName: string
+  graduationYear: number
+  certificate: File
+}

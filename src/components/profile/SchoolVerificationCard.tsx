@@ -7,6 +7,7 @@ type Props = {
     verifiedSchool?: VerifiedSchool
     schoolForm: SchoolForm
     isOpened: boolean
+    isSaving: boolean
     onOpen: () => void
     onClose: () => void
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
@@ -21,6 +22,7 @@ function SchoolVerificationCard({
     verifiedSchool,
     schoolForm,
     isOpened,
+    isSaving,
     onOpen,
     onClose,
     onSubmit,
@@ -95,8 +97,10 @@ function SchoolVerificationCard({
                     </label>
 
                     <div className={style.buttonRow}>
-                        <button type="submit">학교 인증 저장</button>
-                        <button type="button" onClick={onClose}>
+                        <button type="submit" disabled={isSaving}>
+                            {isSaving ? '저장 중...' : '학교 인증 저장'}
+                        </button>
+                        <button type="button" onClick={onClose} disabled={isSaving}>
                             취소
                         </button>
                     </div>

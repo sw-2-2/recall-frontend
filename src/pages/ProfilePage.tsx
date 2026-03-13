@@ -2,24 +2,18 @@ import style from './styles/ProfilePage.module.css'
 import { useMemo, useState, useEffect } from 'react'
 import favicon from '../assets/icons/jaewon-favicon.png'
 import SchoolVerificationCard from '../components/profile/SchoolVerificationCard'
-import type {
-  ProfileForm,
-  SchoolForm,
-  SchoolType,
-  VerifiedSchool,
-} from '../types/profile.ts'
-import {
-  createInitialSchoolForm,
-  schoolTypeLabel,
-  schoolTypeOrder,
-} from '../types/profile.ts'
-import { fetchMemberProfile, updateMemberProfile } from '../api/profileEdit'
+import type { ProfileForm, SchoolForm, SchoolType, VerifiedSchool } from '../types/profile.ts'
+import { createInitialSchoolForm, schoolTypeLabel, schoolTypeOrder } from '../types/profile.ts'
+import { fetchMemberProfile, updateMemberProfile, saveVerifiedSchool, fetchVerifiedSchools } from '../api/profileEdit'
 
 function ProfilePage() {
   // 조회 중 표시
   const [loading, setLoading] = useState(true)
-  // 저장 중 표시
+  // 프로필 저장 중 표시
   const [profileSaving, setProfileSaving] = useState(false)
+  // 학교 저장 중 표시
+  const [schoolSaving, setSchoolSaving] = useState(false)
+
   // useState 단계
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     name: '',
@@ -35,7 +29,7 @@ function ProfilePage() {
   })
 
   // 사용자가 인증한 학교 목록 상태
-  const [verifiedSchools] = useState<VerifiedSchool[]>([])
+  const [verifiedSchools, setVerifiedSchools] = useState<VerifiedSchool[]>([])
 
   // 프로필 이미지 파일 미리보기
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -92,13 +86,18 @@ function ProfilePage() {
       try {
         setLoading(true)
 
-        const profile = await fetchMemberProfile()
+        const [profile, schools] = await Promise.all([
+          fetchMemberProfile(),
+          fetchVerifiedSchools(),
+        ])
 
         setProfileForm({
           name: profile.name,
           phone: profile.phone,
           address: profile.address,
         })
+
+        setVerifiedSchools(schools)
       } catch (error) {
         setMessage(
           error instanceof Error
@@ -116,7 +115,7 @@ function ProfilePage() {
   // 프로필 저장 함수
   const handleProfileSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
+
     try {
       setProfileSaving(true)
       setMessage('')
@@ -147,7 +146,7 @@ function ProfilePage() {
 
   // 학교 정보 저장 함수
   const handleSchoolSave =
-    (type: SchoolType) => (e: React.FormEvent<HTMLFormElement>) => {
+    (type: SchoolType) => async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
 
       const schoolForm = schoolForms[type]
@@ -172,7 +171,46 @@ function ProfilePage() {
         return
       }
 
-      setMessage(`${schoolTypeLabel[type]} 학교 인증 저장 API 연결 전입니다.`)
+      const graduationYear = Number(schoolForm.graduationYear)
+
+      if (!graduationYear || Number.isNaN(graduationYear)) {
+        setMessage(`${schoolTypeLabel[type]} 졸업년도를 정확히 입력해주세요.`)
+        return
+      }
+
+      try {
+        setSchoolSaving(true)
+        setMessage('')
+
+        // 학교 저장 함수 (profileEdit 파일)
+        const savedSchool = await saveVerifiedSchool({
+          type,
+          region: schoolForm.region,
+          schoolName: schoolForm.schoolName,
+          graduationYear,
+          certificate: schoolForm.certificate,
+        })
+
+        // 새로 저장된 인증 학교를 목록에 추가
+        setVerifiedSchools((prev) => [...prev, savedSchool])
+
+        // 저장이 끝난 카드의 입력 폼을 닫고,
+        // 인증된 학교 카드가 보
+        setOpenedSchoolForms((prev) => ({
+          ...prev,
+          [type]: false,
+        }))
+
+        setMessage(`${schoolTypeLabel[type]} 학교 인증이 저장되었습니다.`)
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : `${schoolTypeLabel[type]} 학교 인증 저장 중 오류가 발생했습니다.`,
+        )
+      } finally {
+        setSchoolSaving(false)
+      }
     }
 
   // 로그아웃 함수
@@ -278,6 +316,7 @@ function ProfilePage() {
               verifiedSchool={verifiedSchoolMap[type]}
               schoolForm={schoolForms[type]}
               isOpened={openedSchoolForms[type]}
+              isSaving={schoolSaving}
               onOpen={() => {
                 // 폼 초기화
                 setSchoolForms((prev) => ({
