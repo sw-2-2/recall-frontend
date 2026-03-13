@@ -1,59 +1,19 @@
 import style from './styles/ProfilePage.module.css'
 import { useMemo, useState } from 'react'
 import favicon from '../assets/icons/jaewon-favicon.png'
-import schoolDummy from '../assets/icons/school_dummy.jpeg'
+import SchoolVerificationCard from '../components/profile/SchoolVerificationCard'
+import type {
+  ProfileForm,
+  SchoolForm,
+  SchoolType,
+  VerifiedSchool,
+} from '../types/profile.ts'
+import {
+  createInitialSchoolForm,
+  schoolTypeLabel,
+  schoolTypeOrder,
+} from '../types/profile.ts'
 
-// 학교 타입 정의
-type SchoolType = 'elementary' | 'middle' | 'high'
-
-// 프로필
-type ProfileForm = {
-  name: string
-  phone: string
-  address: string
-}
-
-// 학교
-type SchoolForm = {
-  type: SchoolType
-  region: string
-  schoolName: string
-  graduationYear: string
-  // 파일 등록 여부
-  certificate: File | null
-}
-
-// 인증 학교
-type VerifiedSchool = {
-  schoolId: number
-  type: SchoolType
-  name: string
-  address: string
-  graduationYear: number
-  certificateFileName: string
-}
-
-// 학교 타입 라벨링
-const schoolTypeLabel: Record<SchoolType, string> = {
-  elementary: '초등학교',
-  middle: '중학교',
-  high: '고등학교',
-}
-
-// 학교 타입 순서
-const schoolTypeOrder: SchoolType[] = ['elementary', 'middle', 'high']
-
-// 학교별 기본 폼 생성 함수
-function createInitialSchoolForm(type: SchoolType): SchoolForm {
-  return {
-    type,
-    region: '',
-    schoolName: '',
-    graduationYear: '',
-    // 파일 등록 기본 - null
-    certificate: null,
-  }
-}
 
 function ProfilePage() {
   // useState 단계
@@ -63,21 +23,23 @@ function ProfilePage() {
     address: '',
   })
 
-  // 학교별 폼 상태를 각각 관리 
+  // 학교별 폼 상태를 각각 관리
   const [schoolForms, setSchoolForms] = useState<Record<SchoolType, SchoolForm>>({
-    elementary: createInitialSchoolForm('elementary'),
-    middle: createInitialSchoolForm('middle'),
-    high: createInitialSchoolForm('high'),
+    elementary: createInitialSchoolForm(),
+    middle: createInitialSchoolForm(),
+    high: createInitialSchoolForm(),
   })
 
-  //사용자가 인증한 학교 목록
+  // 사용자가 인증한 학교 목록 상태
   const [verifiedSchools] = useState<VerifiedSchool[]>([])
+
   // 프로필 이미지 파일 미리보기
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
   // 안내 메시지
   const [message, setMessage] = useState('')
 
-  // 각 학교 카드를 각각 관리
+  // 각 학교 카드의 폼 열림 상태
   const [openedSchoolForms, setOpenedSchoolForms] = useState<Record<SchoolType, boolean>>({
     elementary: false,
     middle: false,
@@ -87,30 +49,38 @@ function ProfilePage() {
   // 인증학교 - useMemo 사용
   // verifiedSchools 배열을 초, 중, 고 타입별로 바로 꺼내 쓸 수 있는 객체 형태로 변환
   const verifiedSchoolMap = useMemo(
-    // useMemo 안에서 실제로 객체를 만드는 함수
     () =>
-      // verifiedSchools 배열을 순회하면서 하나의 객체로 누적
       verifiedSchools.reduce<Record<SchoolType, VerifiedSchool | undefined>>(
         // acc: 누적 객체
         // school: 현재 순회 중인 학교 하나
         (acc, school) => {
           // school.type 값을 key로 해서 해당 학교 정보를 저장
-          // 예: school.type이 'middle'이면 acc.middle = school
           acc[school.type] = school
-          // 다음 사용을 위해 누적 객체 리턴
           return acc
         },
         {
-          // reduce의 초기값
           // 처음에는 인증된 학교가 없다고 간주
           elementary: undefined,
           middle: undefined,
           high: undefined,
         },
       ),
-    // verifiedSchools 배열이 바뀔 때만 다시 계산
     [verifiedSchools],
   )
+  //
+  // useMemo에서 교체 고민 중.. -> 변경 고민 중
+  // const verifiedSchoolMap = verifiedSchools.reduce<Record<SchoolType, VerifiedSchool | undefined>>(
+  //   (acc, school) => {
+  //     acc[school.type] = school
+  //     return acc
+  //   },
+  //   {
+  //     elementary: undefined,
+  //     middle: undefined,
+  //     high: undefined,
+  //   },
+  // )
+  // 
 
   // 프로필 저장 함수
   const handleProfileSave = (e: React.FormEvent<HTMLFormElement>) => {
@@ -148,13 +118,14 @@ function ProfilePage() {
       setMessage(`${schoolTypeLabel[type]} 학교 인증 저장 API 연결 전입니다.`)
     }
 
+  // 로그아웃 함수
   const handleLogout = () => {
     setMessage('아직 로그아웃 기능 연결 전입니다.')
   }
 
   return (
     <div className={style.pageContainer}>
-      {/* Section 1: 프로필 수정하기 = 제목 + 프로필 사진 구역 + 개인정보 구역 + 프로필 저장 버튼*/}
+      {/* Section 1: 프로필 수정하기 = 제목 + 프로필 사진 구역 + 개인정보 구역 + 프로필 저장 버튼 */}
       <section className={style.sectionCard}>
         {/* 1-1. 제목 */}
         <h2 className={style.sectionTitle}>프로필 수정하기</h2>
@@ -172,9 +143,9 @@ function ProfilePage() {
               accept="image/*"
               onChange={(event) => {
                 const file = event.target.files?.[0]
-                //files가 존재하면 files[0]
-                //없으면 undefined
+                // files가 있으면 첫 번째 파일을 가져오고, 없으면 undefined가 된다
                 if (!file) return
+
                 if (previewUrl) URL.revokeObjectURL(previewUrl)
                 setPreviewUrl(URL.createObjectURL(file))
               }}
@@ -237,179 +208,76 @@ function ProfilePage() {
 
         {/* 2-2. 초, 중, 고별 인증 구역 */}
         <div className={style.schoolTypeGrid}>
-          {schoolTypeOrder.map((type) => {
-            const verifiedSchool = verifiedSchoolMap[type]
-            const schoolForm = schoolForms[type]
-            const isOpened = openedSchoolForms[type]
+          {schoolTypeOrder.map((type) => (
+            <SchoolVerificationCard
+              key={type}
+              label={schoolTypeLabel[type]}
+              verifiedSchool={verifiedSchoolMap[type]}
+              schoolForm={schoolForms[type]}
+              isOpened={openedSchoolForms[type]}
+              onOpen={() => {
+                // 폼 초기화
+                setSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: createInitialSchoolForm(),
+                }))
 
-            return (
-              <div key={type} className={style.schoolTypeCard}>
-                {/* 헤더 */}
-                <div className={style.schoolTypeHeader}>
-                  <h3>{schoolTypeLabel[type]}</h3>
-
-                  {/* 인증된 학교 x + 인증 폼 close 상황일 때 -> 카드 중앙에 위치시키기 위해 이동
-                  {!verifiedSchool && !isOpened && (
-                    <button
-                      type="button"
-                      className={style.addButton}
-                      onClick={() => {
-                        // 인증 폼 열기
-                        setOpenedSchoolForms((prev) => ({
-                          ...prev,
-                          [type]: true,
-                        })
-                      )
-                        // 폼 데이터를 초기화 해줌
-                        setSchoolForms((prev) => ({
-                          ...prev,
-                          [type]: createInitialSchoolForm(type),
-                        }))
-                      }}
-                    >
-                      +
-                    </button>
-                  )} */}
-                </div>
-
-                {/* 인증이 된 경우: 학교 정보 카드 / 인증이 안 된 경우: 안내 문구 또는 카드 내부 폼 */}
-                {verifiedSchool ? (
-                  <div className={style.verifiedSchoolCard}>
-                    <img
-                      src={schoolDummy}
-                      alt={`${verifiedSchool.name} 졸업증명서`}
-                      className={style.certificateImage}
-                    />
-                    <div>
-                      <p className={style.schoolName}>{verifiedSchool.name}</p>
-                      <p className={style.schoolMeta}>{verifiedSchool.address}</p>
-                      <p className={style.schoolMeta}>
-                        {verifiedSchool.graduationYear}년 졸업
-                      </p>
-                    </div>
-                  </div>
-                ) : isOpened ? (
-                  <form onSubmit={handleSchoolSave(type)} className={style.formGrid}>
-                    <label className={style.inputGroup}>
-                      소재지
-                      <input
-                        type="text"
-                        value={schoolForm.region}
-                        onChange={(e) =>
-                          setSchoolForms((prev) => ({
-                            ...prev,
-                            [type]: {
-                              ...prev[type],
-                              region: e.target.value,
-                            },
-                          }))
-                        }
-                        placeholder="학교 소재지 입력"
-                      />
-                    </label>
-
-                    <label className={style.inputGroup}>
-                      학교명
-                      <input
-                        type="text"
-                        value={schoolForm.schoolName}
-                        onChange={(e) =>
-                          setSchoolForms((prev) => ({
-                            ...prev,
-                            [type]: {
-                              ...prev[type],
-                              schoolName: e.target.value,
-                            },
-                          }))
-                        }
-                        placeholder="학교명을 입력해주세요"
-                      />
-                    </label>
-
-                    <label className={style.inputGroup}>
-                      졸업년도
-                      <input
-                        type="number"
-                        value={schoolForm.graduationYear}
-                        onChange={(e) =>
-                          setSchoolForms((prev) => ({
-                            ...prev,
-                            [type]: {
-                              ...prev[type],
-                              graduationYear: e.target.value,
-                            },
-                          }))
-                        }
-                        min={1950}
-                        max={2100}
-                        placeholder="예: 2017"
-                      />
-                    </label>
-
-                    <label className={style.inputGroup}>
-                      졸업증명서
-                      <input
-                        type="file"
-                        onChange={(e) =>
-                          setSchoolForms((prev) => ({
-                            ...prev,
-                            [type]: {
-                              ...prev[type],
-                              certificate: e.target.files?.[0] ?? null,
-                            },
-                          }))
-                        }
-                      />
-                    </label>
-
-                    <div className={style.buttonRow}>
-                      <button type="submit">학교 인증 저장</button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          // + 버튼으로 회귀
-                          setOpenedSchoolForms((prev) => ({
-                            ...prev,
-                            [type]: false,
-                          }))
-                        }}
-                      >
-                        취소
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className={style.emptyState}>
-                    <button
-                      type="button"
-                      className={style.addButtonCenter}
-                      onClick={() => {
-                        // 폼 초기화
-                        setSchoolForms((prev) => ({
-                          ...prev,
-                          [type]: createInitialSchoolForm(type),
-                        }))
-                        // 폼 열기
-                        setOpenedSchoolForms((prev) => ({
-                          ...prev,
-                          [type]: true,
-                        }))
-                      }}
-                    >
-                      +
-                    </button>
-                    <p className={style.emptyText}>
-                      아직 인증 전입니다. + 버튼으로 등록해주세요.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-            )
-          })}
+                // 폼 열기
+                setOpenedSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: true,
+                }))
+              }}
+              onClose={() => {
+                // 입력 폼을 닫고 + 버튼이 보이는 상태로 되돌림
+                setOpenedSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: false,
+                }))
+              }}
+              onSubmit={handleSchoolSave(type)}
+              onRegionChange={(value) =>
+                setSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: {
+                    ...prev[type],
+                    region: value,
+                  },
+                }))
+              }
+              onSchoolNameChange={(value) =>
+                setSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: {
+                    ...prev[type],
+                    schoolName: value,
+                  },
+                }))
+              }
+              onGraduationYearChange={(value) =>
+                setSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: {
+                    ...prev[type],
+                    graduationYear: value,
+                  },
+                }))
+              }
+              onCertificateChange={(file) =>
+                setSchoolForms((prev) => ({
+                  ...prev,
+                  [type]: {
+                    ...prev[type],
+                    certificate: file,
+                  },
+                }))
+              }
+            />
+          ))}
         </div>
       </section>
 
+      {/* Section 3: 계정 */}
       <section className={style.sectionCard}>
         <h2 className={style.sectionTitle}>계정</h2>
         <div className={style.buttonRow}>
@@ -419,6 +287,7 @@ function ProfilePage() {
         </div>
       </section>
 
+      {/* 안내 메시지 */}
       {message && <div className={style.messageBox}>{message}</div>}
     </div>
   )
