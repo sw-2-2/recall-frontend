@@ -1,0 +1,84 @@
+// 학교 타입 정의
+export type SchoolType = 'elementary' | 'middle' | 'high'
+
+// 프로필
+export type ProfileForm = {
+  name: string
+  phone: string
+  address: string
+}
+
+// 학교
+export type SchoolForm = {
+  region: string
+  schoolName: string
+  graduationYear: string
+  // 졸업증명서 파일
+  certificate: File | null
+}
+
+// 인증 학교
+export type VerifiedSchool = {
+  schoolId: number
+  type: SchoolType
+  name: string
+  address: string
+  graduationYear: number
+  certificateFileName: string
+}
+
+// 학교 타입 라벨링
+export const schoolTypeLabel: Record<SchoolType, string> = {
+  elementary: '초등학교',
+  middle: '중학교',
+  high: '고등학교',
+}
+
+// 학교 타입 순서
+export const schoolTypeOrder: SchoolType[] = ['elementary', 'middle', 'high']
+
+// 학교별 기본 폼 생성 함수
+export function createInitialSchoolForm(): SchoolForm {
+  return {
+    region: '',
+    schoolName: '',
+    graduationYear: '',
+    // 초기에는 업로드된 파일이 없으므로 null
+    certificate: null,
+  }
+}
+
+
+
+// 프런트용 프로필 
+export type MemberProfile = {
+  id: number
+  name: string
+  phone: string
+  address: string
+  profileImageUrl: string | null
+}
+
+// 업데이트 용
+export type UpdateProfileInput = {
+  name: string
+  phone: string
+  address: string
+}
+
+// 기존 학교 검색 결과 타입
+export type SchoolRecord = {
+  id: number
+  type: SchoolType
+  name: string
+  address: string
+}
+
+// 학교 인증 저장용 입력 타입
+export type SchoolVerificationInput = {
+  type: SchoolType
+  region: string
+  schoolName: string
+  graduationYear: number
+  certificate: File
+}
