@@ -1,39 +1,224 @@
-.sectionDivider {
-    border-width: 0px 0px 1px;
-    border-style: solid;
-    border-color: #dddddd;
-    margin: 5%;
-    padding: 0 16px;
+.pageContainer {
+  padding: 24px 5%;
 }
 
-.profileEdit {
-    vertical-align: middle;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    justify-content: flex-start;
-    margin-bottom: 5vh;
-}
-
-.profilePhoto {
-    border-radius: 50%;
-    width: 100px;
-}
-
-.saveProfile {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
-    padding-left: 0;
+.sectionCard {
+  border-width: 0 0 1px;
+  border-style: solid;
+  border-color: #dddddd;
+  margin-bottom: 32px;
+  padding: 0 16px 24px;
 }
 
 .sectionTitle {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 5%;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5%;
 }
 
-.profileDivider {
-    width: 30%;
-    justify-content: flex-start;
+.profileEditForm {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 32px;
+  margin-bottom: 5vh;
+  flex-wrap: wrap;
+}
+
+.profileImageBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 140px;
+}
+
+.profilePhoto {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.profileFields {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-content: flex-start;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+  flex: 1;
+}
+
+.fullWidth {
+  width: 100%;
+  flex-basis: 100%;
+}
+
+.inputGroup input,
+.inputGroup select {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.inputGroup input:focus,
+.inputGroup select:focus {
+  border-color: #999999;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+  padding-left: 0;
+}
+
+.buttonRow button {
+  border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.buttonRow button:hover {
+  background-color: #f7f7f7;
+}
+
+.schoolTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.schoolTypeCard {
+  border: 1px solid #dddddd;
+  border-radius: 20px;
+  padding: 20px;
+  height: 420px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.schoolTypeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.schoolTypeHeader h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.verifiedSchoolCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.certificateImage {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eeeeee;
+}
+
+.schoolName {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 8px;
+}
+
+.schoolMeta {
+  font-size: 14px;
+  color: #666666;
+  margin: 0 0 6px;
+}
+
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.emptyText {
+  color: #777777;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.addButtonCenter {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #dddddd;
+  background-color: #ffffff;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addButtonCenter:hover {
+  background-color: #f5f5f5;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.messageBox {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+  font-size: 14px;
+  color: #333333;
+}
+
+@media (max-width: 1024px) {
+  .schoolTypeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .profileEditForm {
+    flex-direction: column;
+  }
+
+  .profileFields {
+    width: 100%;
+  }
+
+  .schoolTypeCard {
+    height: auto;
+    min-height: 320px;
+  }
 }
