@@ -88,7 +88,13 @@ function MainPage() {
             <div className={styles.sectionBlock}>
               <div className={styles.sectionHead}>
                 <h2>내 {schoolLabelMap[selectedType]}</h2>
-                <p>인증된 학교가 있으면 항상 최상단에 둡니다.</p>
+                <p>
+                  {
+                    meQuery.data?.name.length === 0
+                    ? '학교를 인증하면 동창 정보를 확인하실 수 있습니다.'
+                    : ''
+                  }
+                </p>
               </div>
               <SchoolSummaryCard
                 school={mySchool}
@@ -103,9 +109,7 @@ function MainPage() {
             <div className={styles.sectionHead}>
               <h2>학교 리스트</h2>
               <p>
-                {schoolSearchQuery.debouncedKeyword.length >= 1
-                  ? '검색 결과를 먼저 보여주는 상태입니다.'
-                  : '기본 학교 리스트를 보여주는 상태입니다.'}
+                re:call에 등록된 학교
               </p>
             </div>
 
