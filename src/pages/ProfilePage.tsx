@@ -13,11 +13,13 @@ import {
   schoolTypeLabel,
   schoolTypeOrder,
 } from '../types/profile.ts'
-import { fetchMemberProfile } from '../api/profileEdit'
+import { fetchMemberProfile, updateMemberProfile } from '../api/profileEdit'
 
 function ProfilePage() {
   // 조회 중 표시
   const [loading, setLoading] = useState(true)
+  // 저장 중 표시
+  const [profileSaving, setProfileSaving] = useState(false)
   // useState 단계
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     name: '',
@@ -112,9 +114,35 @@ function ProfilePage() {
   }, [])
 
   // 프로필 저장 함수
-  const handleProfileSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleProfileSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setMessage('아직 프로필 저장 API 연결 전입니다.')
+    
+    try {
+      setProfileSaving(true)
+      setMessage('')
+
+      const updatedProfile = await updateMemberProfile({
+        name: profileForm.name,
+        phone: profileForm.phone,
+        address: profileForm.address,
+      })
+
+      setProfileForm({
+        name: updatedProfile.name,
+        phone: updatedProfile.phone,
+        address: updatedProfile.address,
+      })
+
+      setMessage('프로필 정보가 저장되었습니다.')
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : '프로필 저장 중 오류가 발생했습니다.',
+      )
+    } finally {
+      setProfileSaving(false)
+    }
   }
 
   // 학교 정보 저장 함수
@@ -155,7 +183,7 @@ function ProfilePage() {
   if (loading) {
     return <div className={style.pageContainer}>프로필 정보를 불러오는 중...</div>
   }
-  
+
   return (
     <div className={style.pageContainer}>
       {/* Section 1: 프로필 수정하기 = 제목 + 프로필 사진 구역 + 개인정보 구역 + 프로필 저장 버튼 */}
@@ -229,7 +257,9 @@ function ProfilePage() {
 
           {/* 1-4. 프로필 저장 버튼 */}
           <div className={style.buttonRow}>
-            <button type="submit">프로필 저장</button>
+            <button type="submit" disabled={profileSaving}>
+              {profileSaving ? '저장 중...' : '프로필 저장'}
+            </button>
           </div>
         </form>
       </section>
