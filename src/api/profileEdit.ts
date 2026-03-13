@@ -1,78 +1,54 @@
-// import { apiRequest } from "./client"
+// 프런트용 프로필 
+export type MemberProfile = {
+  id: number
+  name: string
+  phone: string
+  address: string
+  profileImageUrl: string | null
+}
 
-// export type Member = {
-//   id: number
-//   name: string
-//   phone: string | null
-//   address: string | null
-//   graduationYear: number | null
-//   elementarySchoolName: string | null
-//   middleSchoolName: string | null
-//   highSchoolName: string | null
-// }
+// 'api/users/me'의 응답 타입
+type UserMeResponse = {
+  id: number
+  name: string
+  phone: string | null
+  address: string | null
+}
 
-// type MembersResponse = {
-//   members: Member[]
-// }
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
-// type ExistingSchoolRequest = {
-//   contentType: 'exist'
-//   id: number
-//   graduationYear: number
-// }
+// 공통 API 호출 함수
+async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(init.headers ?? {}),
+    },
+  })
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(errorText || `API 요청 실패: ${response.status}`)
+  }
 
-// export type CreateProfileRequest = {
-//   name: string
-//   phone: string
-//   address: string
-//   schools: Array<ExistingSchoolRequest | NewSchoolRequest>
-// }
+  return response
+}
 
-// type SchoolType = 'elementary' | 'middle' | 'high'
+// 개인 프로필 가져오기
+async function fetchUserMe(): Promise<UserMeResponse> {
+  const response = await apiFetch('/api/users/me', { method: 'GET' })
+  return response.json() as Promise<UserMeResponse>
+}
 
-// type NewSchoolRequest = {
-//   name: string;
-//   address?: string;
-//   graduationYear: number;
-// }
+export async function fetchMemberProfile(): Promise<MemberProfile> {
+  const data = await fetchUserMe()
 
-// const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '')
-
-
-// function apiUrl(path: string): string {
-//   if (!API_BASE_URL) {
-//     throw new Error('VITE_API_BASE_URL is not set')
-//   }
-//   return `${API_BASE_URL}${path}`
-// }
-
-// export const postNewSchool = (type: SchoolType, payload: NewSchoolRequest) => {
-//   return apiRequest(`api/users/schools/${type}/new`, {
-//     method: "POST",
-//     body: JSON.stringify(payload)
-//   })
-// }
-
-// export async function getProfiles(): Promise<Member[]> {
-//   const res = await fetch(apiUrl('/api/schools/0/members'))
-//   if (!res.ok) throw new Error('api 호출 실패')
-//   const data = (await res.json()) as MembersResponse
-//   return data.members
-// }
-
-// export async function postUserProfile(payload: CreateProfileRequest) {
-//   const res = await fetch(apiUrl('/api/users/profiles'), {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(payload),
-//   })
-
-//   if (!res.ok) {
-//     throw new Error('프로필 저장 실패')
-//   }
-
-//   return res.json()
-// }
+  return {
+    id: data.id,
+    name: data.name,
+    phone: data.phone ?? '',
+    address: data.address ?? '',
+    profileImageUrl: null,
+  }
+}
