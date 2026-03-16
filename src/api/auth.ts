@@ -87,9 +87,12 @@ export async function requestLogin(payload:LoginRequest) {
     headers: {
       'Content-Type': 'application/json'
     },
-    credentials: 'include', // 쿠키 포함
-    body: JSON.stringify(payload),
-  });
+    credentials: "include",
+    body: JSON.stringify(payload)
+  })
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, '로그인 api 에러'))
+  }
 }
 
 // 로그아웃 요청
