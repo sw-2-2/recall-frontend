@@ -8,7 +8,6 @@ import AuthLayout from './components/layouts/AuthLayout'
 import ServiceLayout from './components/layouts/ServiceLayout'
 import MainPage from './pages/MainPage'
 import ProfilePage from './pages/ProfilePage'
-import RegistrationRoute from './components/routes/RegistrationRoute'
 import AppLayout from './components/layouts/AppLayout'
 
 function App() {
@@ -23,12 +22,9 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           {/* <Route path="/profile/register" element={<ProfileRegisterPage />} /> */}
-
-          <Route element={<RegistrationRoute />}>
-            <Route element={<ServiceLayout />}>
-              <Route path={DEFAULT_SCHOOL_PATH} element={<MainPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Route>
+          <Route element={<ServiceLayout />}>
+            <Route path={DEFAULT_SCHOOL_PATH} element={<MainPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
       </Route>
