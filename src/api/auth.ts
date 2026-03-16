@@ -90,17 +90,3 @@ export async function requestLogin(payload:LoginRequest) {
     throw new Error(await readErrorMessage(response, '로그인 api 에러'))
   }
 }
-
-// 로그인 요청
-export async function requestLogout(payload:LogoutRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: "include"
-  })
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, '로그인 api 에러'))
-  }
-}
