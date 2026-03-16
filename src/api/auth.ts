@@ -93,6 +93,7 @@ export async function requestLogin(payload:LoginRequest) {
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, '로그인 api 에러'))
   }
+  return response.json();
 }
 
 // 로그아웃 요청
