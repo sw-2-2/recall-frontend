@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styles from './styles/MainPage.module.css'
 import MainHeader from '../components/main/SchoolSearchPannel'
 import SchoolSummaryCard from '../components/main/SchoolSummaryCard'
@@ -12,6 +13,7 @@ import { useMainPageStore } from '../store/mainPageStore'
 import type { SchoolSummary } from '../types/school'
 
 function MainPage() {
+  const navigate = useNavigate()
   const [searchKeyword, setSearchKeyword] = useState('')
   const selectedType = useMainPageStore((state) => state.selectedType)
   const selectedSchoolId = useMainPageStore((state) => state.selectedSchoolId)
@@ -71,6 +73,10 @@ function MainPage() {
     setSearchKeyword(school.name)
   }
 
+  const handleMoveProfile = () => {
+    navigate('/profile')
+  }
+
   return (
     <div className={styles.page}>
       <MainHeader
@@ -88,7 +94,13 @@ function MainPage() {
             <div className={styles.sectionBlock}>
               <div className={styles.sectionHead}>
                 <h2>내 {schoolLabelMap[selectedType]}</h2>
-                <p>인증된 학교가 있으면 항상 최상단에 둡니다.</p>
+                <p>
+                  {
+                    meQuery.data?.name.length === 0
+                    ? '학교를 인증하면 동창 정보를 확인하실 수 있습니다.'
+                    : ''
+                  }
+                </p>
               </div>
               <SchoolSummaryCard
                 school={mySchool}
@@ -99,13 +111,28 @@ function MainPage() {
             </div>
           )}
 
+          {!mySchool && (
+            <div className={styles.sectionBlock}>
+              <div className={styles.sectionHead}>
+                <h2>내 {schoolLabelMap[selectedType]}</h2>
+                <p>아직 등록된 내 학교가 없습니다. 학교를 등록하면 내 학교 카드와 동창 정보를 확인할 수 있습니다.</p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.registerButton}
+                onClick={handleMoveProfile}
+              >
+                + 학교 등록하기
+              </button>
+            </div>
+          )}
+
           <div className={styles.sectionBlock}>
             <div className={styles.sectionHead}>
               <h2>학교 리스트</h2>
               <p>
-                {schoolSearchQuery.debouncedKeyword.length >= 1
-                  ? '검색 결과를 먼저 보여주는 상태입니다.'
-                  : '기본 학교 리스트를 보여주는 상태입니다.'}
+                re:call에 등록된 학교
               </p>
             </div>
 

@@ -4,12 +4,14 @@ import { requestLogin, requestSignup } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_SCHOOL_PATH } from "../constants/schools";
 import { useAuthStore } from "../store/authStore";
+import { getMe } from "../api/users";
 
 
 
 function LoginPage() {
   const navigate = useNavigate()
   const setAuthenticated = useAuthStore((state) => state.setAuthenticated)
+  const setRegistered = useAuthStore((state) => state.setRegistered)
 
   // 로그인탭과 회원가입탭 선언
   const [mode, setMode] = useState<'login' | 'signup'>('login')
@@ -30,8 +32,11 @@ function LoginPage() {
     try {
       await requestLogin(loginForm)
 
+      const me = await getMe()
+
       // 로그인 이후에 인증상태 변경
       setAuthenticated(true)
+      setRegistered(me.schools.length > 0)
       // 로그인 이후에 다시 리라우터링함
       navigate(DEFAULT_SCHOOL_PATH)
     } catch (error) {
@@ -44,18 +49,33 @@ function LoginPage() {
 
   const handleSignupSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault() // form의 특성인 자동제출을 막기 위해서 씀. 안 쓰면 브라우저가 새로 로드돼서 내용 다날라감
+
+    const normalizedSignupForm = {
+      email: signupForm.email.trim(),
+      password: signupForm.password.trim(),
+      name: signupForm.name.trim(),
+      phone: signupForm.phone.trim(),
+      address: signupForm.address.trim(),
+    }
+
+    if (!normalizedSignupForm.email || !normalizedSignupForm.password || !normalizedSignupForm.name) {
+      setErrorMessage('이메일, 비밀번호, 이름을 입력해주세요.')
+      return
+    }
+
     setIsLoading(true)
     setErrorMessage(null)
 
     try {
-      await requestSignup(signupForm)
+      await requestSignup(normalizedSignupForm)
       // 로그인 폼에 데이터 넣음
       setLoginForm({
-        email: signupForm.email,
-        password: signupForm.password
+        email: normalizedSignupForm.email,
+        password: normalizedSignupForm.password
       })
       // 로그인 탭으로 변경
       setMode('login')
+      setErrorMessage('회원가입이 완료되었습니다. 로그인해주세요.')
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : '회원가입 실패') // 원래 쓴 에러가 맞으면 그거 쓰고 아니면 '회원가입실패' 띄움
     } finally {
@@ -148,6 +168,8 @@ function LoginPage() {
                 </button>
               </form>
             )}
+
+            {errorMessage && <p>{errorMessage}</p>}
 
 
           </div>
