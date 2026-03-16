@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import styles from './styles/GlobalHeader.module.css'
 import userIcon from '../../assets/icons/user-icon.png'
+import graduationIcon from '../../assets/icons/graduation-icon.png'
 
 function GlobalHeader() {
   return (
@@ -10,6 +11,9 @@ function GlobalHeader() {
           to="/"
           className={styles.brand}
         >
+          <span className={styles.brandMark} aria-hidden="true">
+            <img src={graduationIcon} alt="" />
+          </span>
           RE:CALL
         </NavLink>
 

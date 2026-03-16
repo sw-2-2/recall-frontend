@@ -1,46 +1,32 @@
 :root {
-  --page-bg-top: #f8fbff;
-  --page-bg-bottom: #eef4fb;
-  --paper: rgba(255, 255, 255, 0.9);
+  --page-bg-top: #f4efe8;
+  --page-bg-bottom: #f4efe8;
+  --paper: rgba(255, 255, 255, 0.94);
   --paper-strong: #ffffff;
-  --ink: #0f172a;
-  --ink-soft: #64748b;
-  --line: rgba(148, 163, 184, 0.22);
-  --accent: #2563eb;
-  --accent-deep: #1d4ed8;
-  --accent-soft: #dbeafe;
-  --navy: #0f172a;
-  --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  --ink: #1e2430;
+  --ink-soft: #69655f;
+  --line: rgba(120, 100, 81, 0.16);
+  --accent: #a5643f;
+  --accent-deep: #834929;
+  --accent-soft: #f2e2d6;
+  --accent-soft-strong: #e6d0be;
+  --surface-soft: #faf7f3;
+  --surface-tint: #f6efe8;
+  --surface-tint-strong: #efe4d8;
+  --navy: #1e2430;
+  --shadow: 0 12px 32px rgba(34, 25, 18, 0.06);
   --display-font: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
 
-  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-family: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   color: var(--ink);
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 24%),
-    linear-gradient(180deg, var(--page-bg-top) 0%, var(--page-bg-bottom) 100%);
+  background: var(--page-bg-top);
 }
 
 
 html,
 body {
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 24%),
-    linear-gradient(180deg, var(--page-bg-top) 0%, var(--page-bg-bottom) 100%);
+  background: var(--page-bg-top);
   color: var(--ink);
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 90%);
 }
 
 #root {

@@ -1,7 +1,6 @@
 import style from './styles/ProfilePage.module.css'
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import favicon from '../assets/icons/jaewon-favicon.png'
 import SchoolVerificationCard from '../components/profile/SchoolVerificationCard'
 import type { ProfileForm, SchoolForm, SchoolType, VerifiedSchool } from '../types/profile.ts'
 import { createInitialSchoolForm, schoolTypeLabel, schoolTypeOrder } from '../types/profile.ts'
@@ -10,61 +9,122 @@ import { useAuthStore } from '../store/authStore'
 import { requestLogout } from '../api/auth.ts'
 import { DEFAULT_SCHOOL_PATH } from '../constants/schools.ts'
 
+function formatPhoneNumber(phone?: string | null) {
+  if (!phone) {
+    return '-'
+  }
+
+  const digits = phone.replace(/\D/g, '')
+
+  if (digits.startsWith('02')) {
+    if (digits.length === 9) {
+      return digits.replace(/^(02)(\d{3})(\d{4})$/, '$1-$2-$3')
+    }
+
+    if (digits.length === 10) {
+      return digits.replace(/^(02)(\d{4})(\d{4})$/, '$1-$2-$3')
+    }
+  }
+
+  if (digits.length === 10) {
+    return digits.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3')
+  }
+
+  if (digits.length === 11) {
+    return digits.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3')
+  }
+
+  return phone
+}
+
+function splitPhoneNumber(phone?: string | null) {
+  const digits = (phone || '').replace(/\D/g, '').slice(0, 11)
+
+  if (digits.startsWith('02')) {
+    if (digits.length <= 2) {
+      return [digits, '', '']
+    }
+
+    if (digits.length <= 6) {
+      return ['02', digits.slice(2), '']
+    }
+
+    return ['02', digits.slice(2, digits.length - 4), digits.slice(-4)]
+  }
+
+  if (digits.length <= 3) {
+    return [digits, '', '']
+  }
+
+  if (digits.length <= 7) {
+    return [digits.slice(0, 3), digits.slice(3), '']
+  }
+
+  return [digits.slice(0, 3), digits.slice(3, digits.length - 4), digits.slice(-4)]
+}
+
+function combinePhoneNumber(first: string, second: string, third: string) {
+  return `${first}${second}${third}`.replace(/\D/g, '')
+}
+
+function splitAddress(address?: string | null) {
+  const parts = (address || '').trim().split(/\s+/).filter(Boolean)
+
+  if (parts.length === 0) {
+    return ['', '']
+  }
+
+  if (parts.length === 1) {
+    return [parts[0], '']
+  }
+
+  return [parts[0], parts.slice(1).join(' ')]
+}
+
+function combineAddress(city: string, district: string) {
+  return [city.trim(), district.trim()].filter(Boolean).join(' ')
+}
+
 function ProfilePage() {
   const navigate = useNavigate()
   const setRegistered = useAuthStore((state) => state.setRegistered)
 
-  // 조회 중 표시
   const [loading, setLoading] = useState(true)
-  // 프로필 저장 중 표시
   const [profileSaving, setProfileSaving] = useState(false)
-  // 학교 저장 중 표시
   const [schoolSaving, setSchoolSaving] = useState(false)
 
-  // useState 단계
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     name: '',
     phone: '',
     address: '',
   })
 
-  // 학교별 폼 상태를 각각 관리
   const [schoolForms, setSchoolForms] = useState<Record<SchoolType, SchoolForm>>({
     elementary: createInitialSchoolForm(),
     middle: createInitialSchoolForm(),
     high: createInitialSchoolForm(),
   })
 
-  // 사용자가 인증한 학교 목록 상태
   const [verifiedSchools, setVerifiedSchools] = useState<VerifiedSchool[]>([])
-
-  // 프로필 이미지 파일 미리보기
+  const [profileEmail, setProfileEmail] = useState('')
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-
-  // 안내 메시지
   const [message, setMessage] = useState('')
 
-  // 각 학교 카드의 폼 열림 상태
   const [openedSchoolForms, setOpenedSchoolForms] = useState<Record<SchoolType, boolean>>({
     elementary: false,
     middle: false,
     high: false,
   })
 
-  // 인증학교 - useMemo 사용
-  // verifiedSchools 배열을 초, 중, 고 타입별로 바로 꺼내 쓸 수 있는 객체 형태로 변환
   const verifiedSchoolMap = useMemo(
     () =>
       verifiedSchools.reduce<Record<SchoolType, VerifiedSchool | undefined>>(
-        // acc: 누적 객체
-        // school: 현재 순회 중인 학교 하나
         (acc, school) => {
-          // school.type 값을 key로 해서 해당 학교 정보를 저장
           acc[school.type] = school
           return acc
         },
         {
-          // 처음에는 인증된 학교가 없다고 간주
           elementary: undefined,
           middle: undefined,
           high: undefined,
@@ -72,22 +132,7 @@ function ProfilePage() {
       ),
     [verifiedSchools],
   )
-  //
-  // useMemo에서 교체 고민 중.. -> 변경 고민 중
-  // const verifiedSchoolMap = verifiedSchools.reduce<Record<SchoolType, VerifiedSchool | undefined>>(
-  //   (acc, school) => {
-  //     acc[school.type] = school
-  //     return acc
-  //   },
-  //   {
-  //     elementary: undefined,
-  //     middle: undefined,
-  //     high: undefined,
-  //   },
-  // )
-  // 
 
-  // 프로필 조회 함수
   useEffect(() => {
     const loadProfile = async () => {
       try {
@@ -103,6 +148,8 @@ function ProfilePage() {
           phone: profile.phone,
           address: profile.address,
         })
+        setProfileEmail(profile.email)
+        setProfileImageUrl(profile.profileImageUrl)
 
         setVerifiedSchools(schools)
         setRegistered(schools.length > 0)
@@ -120,7 +167,6 @@ function ProfilePage() {
     void loadProfile()
   }, [setRegistered])
 
-  // 프로필 저장 함수
   const handleProfileSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -139,6 +185,8 @@ function ProfilePage() {
         phone: updatedProfile.phone,
         address: updatedProfile.address,
       })
+      setProfileEmail(updatedProfile.email)
+      setProfileImageUrl(updatedProfile.profileImageUrl)
 
       setMessage('프로필 정보가 저장되었습니다.')
     } catch (error) {
@@ -152,7 +200,6 @@ function ProfilePage() {
     }
   }
 
-  // 학교 정보 저장 함수
   const handleSchoolSave =
     (type: SchoolType) => async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
@@ -190,7 +237,6 @@ function ProfilePage() {
         setSchoolSaving(true)
         setMessage('')
 
-        // 학교 저장 함수 (profileEdit 파일)
         const savedSchool = await saveVerifiedSchool({
           type,
           region: schoolForm.region,
@@ -199,12 +245,9 @@ function ProfilePage() {
           certificate: schoolForm.certificate,
         })
 
-        // 새로 저장된 인증 학교를 목록에 추가
         setVerifiedSchools((prev) => [...prev, savedSchool])
         setRegistered(true)
 
-        // 저장이 끝난 카드의 입력 폼을 닫고,
-        // 인증된 학교 카드가 보
         setOpenedSchoolForms((prev) => ({
           ...prev,
           [type]: false,
@@ -223,9 +266,6 @@ function ProfilePage() {
       }
     }
 
-
-
-  // 로그아웃 함수
   const [isLoading, setIsLoading] = useState(false)
   const clearAuth = useAuthStore((state) => state.clearAuth)
 
@@ -243,96 +283,226 @@ function ProfilePage() {
     }
   }
 
+  const [phoneFirst, phoneSecond, phoneThird] = splitPhoneNumber(profileForm.phone)
+  const [addressCity, addressDistrict] = splitAddress(profileForm.address)
+
   if (loading) {
-    return <div className={style.pageContainer}>프로필 정보를 불러오는 중...</div>
+    return <div className={style.loadingState}>프로필 정보를 불러오는 중...</div>
   }
 
   return (
     <div className={style.pageContainer}>
-      {/* Section 1: 프로필 수정하기 = 제목 + 프로필 사진 구역 + 개인정보 구역 + 프로필 저장 버튼 */}
-      <section className={style.sectionCard}>
-        {/* 1-1. 제목 */}
-        <h2 className={style.sectionTitle}>프로필 수정하기</h2>
+      {message && <div className={style.messageBox}>{message}</div>}
 
-        {/* 1-2. 프로필 사진 구역 */}
-        <form onSubmit={handleProfileSave} className={style.profileEditForm}>
-          <div className={style.profileImageBlock}>
-            <img
-              className={style.profilePhoto}
-              src={previewUrl ?? favicon}
-              alt="프로필 미리보기"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                const file = event.target.files?.[0]
-                // files가 있으면 첫 번째 파일을 가져오고, 없으면 undefined가 된다
-                if (!file) return
-
-                if (previewUrl) URL.revokeObjectURL(previewUrl)
-                setPreviewUrl(URL.createObjectURL(file))
-              }}
-            />
-          </div>
-
-          {/* 1-3. 개인정보 구역 */}
-          <div className={style.profileFields}>
-            {/* 1-3-1. 이름 */}
-            <label className={style.inputGroup}>
-              이름
+      <section className={`${style.sectionCard} ${style.profileTopCard}`}>
+        <aside className={style.profileSidebar}>
+          <div className={style.summaryHeader}>
+            <label className={style.photoTrigger}>
+              <span className={style.photoFrame}>
+                {previewUrl ? (
+                  <img
+                    className={`${style.profilePhoto} ${style.profilePhotoFilled}`}
+                    src={previewUrl}
+                    alt="프로필 미리보기"
+                  />
+                ) : profileImageUrl ? (
+                  <img
+                    className={`${style.profilePhoto} ${style.profilePhotoFilled}`}
+                    src={profileImageUrl}
+                    alt="프로필 미리보기"
+                  />
+                ) : (
+                  <span className={style.profilePhotoPlaceholder} aria-hidden="true" />
+                )}
+              </span>
+              <span className={style.photoHint}>+</span>
               <input
-                type="text"
-                value={profileForm.name}
-                onChange={(e) =>
-                  setProfileForm((prev) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="이름을 입력해주세요"
+                className={style.hiddenFileInput}
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+
+                  if (!file) {
+                    return
+                  }
+
+                  if (previewUrl) {
+                    URL.revokeObjectURL(previewUrl)
+                  }
+
+                  setPreviewUrl(URL.createObjectURL(file))
+                }}
               />
             </label>
 
-            {/* 1-3-2. 전화번호 */}
-            <label className={style.inputGroup}>
-              전화번호
-              <input
-                type="tel"
-                value={profileForm.phone}
-                onChange={(e) =>
-                  setProfileForm((prev) => ({ ...prev, phone: e.target.value }))
-                }
-                placeholder="전화번호를 입력해주세요"
-              />
-            </label>
-
-            {/* 1-3-3. 주소지 */}
-            <label className={`${style.inputGroup} ${style.fullWidth}`}>
-              주소지
-              <input
-                type="text"
-                value={profileForm.address}
-                onChange={(e) =>
-                  setProfileForm((prev) => ({ ...prev, address: e.target.value }))
-                }
-                placeholder="주소지를 입력해주세요"
-              />
-            </label>
+            <div className={style.summaryIdentity}>
+              <h2 className={style.profileName}>{profileForm.name || '이름 없음'}</h2>
+            </div>
           </div>
 
-          {/* 1-4. 프로필 저장 버튼 */}
-          <div className={style.buttonRow}>
-            <button type="submit" disabled={profileSaving}>
-              {profileSaving ? '저장 중...' : '프로필 저장'}
-            </button>
+          <dl className={style.summaryMeta}>
+            <div className={style.summaryRow}>
+              <dt className={style.summaryLabel}>전화번호</dt>
+              <dd className={style.summaryValue}>{formatPhoneNumber(profileForm.phone)}</dd>
+            </div>
+            <div className={style.summaryRow}>
+              <dt className={style.summaryLabel}>주소</dt>
+              <dd className={style.summaryValue}>{profileForm.address || '-'}</dd>
+            </div>
+          </dl>
+        </aside>
+
+        <div className={style.profileMain}>
+          <div className={style.sectionHeader}>
+            <h2 className={style.sectionTitle}>내 정보</h2>
           </div>
-        </form>
+
+          <form id="profile-form" onSubmit={handleProfileSave} className={style.profileEditForm}>
+            <div className={style.profileFields}>
+              <label className={style.inputGroup}>
+                <span className={style.fieldLabel}>이메일</span>
+                <input
+                  type="email"
+                  value={profileEmail}
+                  disabled
+                  placeholder="이메일"
+                />
+              </label>
+
+              <label className={style.inputGroup}>
+                <span className={style.fieldLabel}>이름</span>
+                <input
+                  type="text"
+                  value={profileForm.name}
+                  onChange={(e) =>
+                    setProfileForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  placeholder="이름"
+                />
+              </label>
+
+              <label className={style.inputGroup}>
+                <span className={style.fieldLabel}>전화번호</span>
+                <div className={style.segmentedRow}>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={3}
+                    value={phoneFirst}
+                    onChange={(e) =>
+                      setProfileForm((prev) => {
+                        const [, second, third] = splitPhoneNumber(prev.phone)
+                        return {
+                          ...prev,
+                          phone: combinePhoneNumber(
+                            e.target.value.replace(/\D/g, '').slice(0, 3),
+                            second,
+                            third,
+                          ),
+                        }
+                      })
+                    }
+                    placeholder="010"
+                  />
+                  <span className={style.segmentDivider}>-</span>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={phoneSecond}
+                    onChange={(e) =>
+                      setProfileForm((prev) => {
+                        const [first, , third] = splitPhoneNumber(prev.phone)
+                        return {
+                          ...prev,
+                          phone: combinePhoneNumber(
+                            first,
+                            e.target.value.replace(/\D/g, '').slice(0, 4),
+                            third,
+                          ),
+                        }
+                      })
+                    }
+                    placeholder="1234"
+                  />
+                  <span className={style.segmentDivider}>-</span>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={phoneThird}
+                    onChange={(e) =>
+                      setProfileForm((prev) => {
+                        const [first, second] = splitPhoneNumber(prev.phone)
+                        return {
+                          ...prev,
+                          phone: combinePhoneNumber(
+                            first,
+                            second,
+                            e.target.value.replace(/\D/g, '').slice(0, 4),
+                          ),
+                        }
+                      })
+                    }
+                    placeholder="1234"
+                  />
+                </div>
+              </label>
+
+              <label className={style.inputGroup}>
+                <span className={style.fieldLabel}>주소</span>
+                <div className={`${style.segmentedRow} ${style.addressRow}`}>
+                  <input
+                    type="text"
+                    value={addressCity}
+                    onChange={(e) =>
+                      setProfileForm((prev) => {
+                        const [, district] = splitAddress(prev.address)
+                        return {
+                          ...prev,
+                          address: combineAddress(e.target.value, district),
+                        }
+                      })
+                    }
+                    placeholder="서울시"
+                  />
+                  <input
+                    type="text"
+                    value={addressDistrict}
+                    onChange={(e) =>
+                      setProfileForm((prev) => {
+                        const [city] = splitAddress(prev.address)
+                        return {
+                          ...prev,
+                          address: combineAddress(city, e.target.value),
+                        }
+                      })
+                    }
+                    placeholder="관악구"
+                  />
+                </div>
+              </label>
+            </div>
+
+            <div className={style.buttonRow}>
+              <button
+                type="submit"
+                className={`${style.actionButton} ${style.primaryButton}`}
+                disabled={profileSaving}
+              >
+                {profileSaving ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          </form>
+        </div>
       </section>
 
-      {/* Section 2: 학교 인증하기 구역 */}
       <section className={style.sectionCard}>
-        {/* 2-1. 제목 */}
-        <h2 className={style.sectionTitle}>학교 인증하기</h2>
+        <div className={style.sectionHeader}>
+          <h2 className={style.sectionTitle}>학교 인증</h2>
+        </div>
 
-        {/* 2-2. 초, 중, 고별 인증 구역 */}
         <div className={style.schoolTypeGrid}>
           {schoolTypeOrder.map((type) => (
             <SchoolVerificationCard
@@ -343,20 +513,17 @@ function ProfilePage() {
               isOpened={openedSchoolForms[type]}
               isSaving={schoolSaving}
               onOpen={() => {
-                // 폼 초기화
                 setSchoolForms((prev) => ({
                   ...prev,
                   [type]: createInitialSchoolForm(),
                 }))
 
-                // 폼 열기
                 setOpenedSchoolForms((prev) => ({
                   ...prev,
                   [type]: true,
                 }))
               }}
               onClose={() => {
-                // 입력 폼을 닫고 + 버튼이 보이는 상태로 되돌림
                 setOpenedSchoolForms((prev) => ({
                   ...prev,
                   [type]: false,
@@ -404,18 +571,23 @@ function ProfilePage() {
         </div>
       </section>
 
-      {/* Section 3: 계정 */}
       <section className={style.sectionCard}>
-        <h2 className={style.sectionTitle}>계정</h2>
-        <div className={style.buttonRow}>
-          <button type="button" onClick={handleLogout} disabled={isLoading}>
-              {isLoading ? '로그아웃 중...' : '로그아웃'}
+        <div className={style.sectionHeader}>
+          <h2 className={style.sectionTitle}>계정</h2>
+        </div>
+
+        <div className={style.accountRow}>
+          <span className={style.accountMeta}>로그아웃</span>
+          <button
+            type="button"
+            className={`${style.actionButton} ${style.secondaryButton}`}
+            onClick={handleLogout}
+            disabled={isLoading}
+          >
+            {isLoading ? '로그아웃 중...' : '로그아웃'}
           </button>
         </div>
       </section>
-
-      {/* 안내 메시지 */}
-      {message && <div className={style.messageBox}>{message}</div>}
     </div>
   )
 }

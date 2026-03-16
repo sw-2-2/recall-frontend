@@ -23,8 +23,10 @@ type UserSchoolResponse = {
 type UserMeResponse = {
   id: number
   name: string
+  email?: string | null
   phone: string | null
   address: string | null
+  profileImageUrl?: string | null
   schools: UserSchoolResponse[]
 }
 
@@ -67,9 +69,10 @@ export async function fetchMemberProfile(): Promise<MemberProfile> {
   return {
     id: data.id,
     name: data.name,
+    email: data.email ?? '',
     phone: data.phone ?? '',
     address: data.address ?? '',
-    profileImageUrl: null,
+    profileImageUrl: data.profileImageUrl ?? null,
   }
 }
 
@@ -95,9 +98,10 @@ export async function updateMemberProfile(
   return {
     id: data.id,
     name: data.name,
+    email: data.email ?? '',
     phone: data.phone ?? '',
     address: data.address ?? '',
-    profileImageUrl: null,
+    profileImageUrl: data.profileImageUrl ?? null,
   }
 }
 

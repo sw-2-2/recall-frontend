@@ -1,15 +1,16 @@
 .searchBox {
   position: relative;
-  width: min(680px, 100%);
+  z-index: 2;
+  width: 100%;
 }
 
 .searchIcon {
   position: absolute;
   top: 50%;
-  left: 16px;
-  width: 20px;
-  height: 20px;
-  color: #64748b;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: #8a7a6e;
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -22,12 +23,13 @@
 .input {
   width: 100%;
   box-sizing: border-box;
-  padding: 15px 18px 15px 46px;
-  border: 1px solid #dbe4f0;
-  border-radius: 18px;
-  background: #f8fafc;
+  height: 48px;
+  padding: 0 16px 0 42px;
+  border: 1px solid #ddd6ce;
+  border-radius: 14px;
+  background: #ffffff;
   color: #0f172a;
-  font-size: 15px;
+  font-size: 14px;
   outline: none;
   transition:
     border-color 0.18s ease,
@@ -40,22 +42,22 @@
 }
 
 .input:focus {
-  border-color: #93c5fd;
+  border-color: var(--accent-soft-strong);
   background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 0 4px rgba(165, 100, 63, 0.08);
 }
 
 .dropdown {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   left: 0;
   width: 100%;
   border: 1px solid #dbe4f0;
-  border-radius: 20px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
   overflow: hidden;
-  z-index: 20;
+  z-index: 40;
 }
 
 .dropdownHead {
@@ -63,38 +65,40 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 11px 14px;
   border-bottom: 1px solid #eef2f7;
   background: #f8fafc;
 }
 
 .dropdownLabel {
   color: #475569;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .dropdownCount {
-  min-width: 28px;
-  height: 28px;
+  min-width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-size: 11px;
   font-weight: 700;
 }
 
 .stateRow {
-  padding: 18px 16px;
+  padding: 14px;
   color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .option {
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid #eef2f7;
   background: #ffffff;
@@ -106,7 +110,7 @@
 }
 
 .option:hover {
-  background: #f8fbff;
+  background: #fbf7f3;
 }
 
 .optionTop {
@@ -125,14 +129,14 @@
 
 .optionName {
   color: #0f172a;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .optionMeta {
-  margin-top: 6px;
-  color: #64748b;
-  font-size: 13px;
+  margin-top: 5px;
+  color: #728197;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -141,10 +145,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 22px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 7px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
 }
 
@@ -173,12 +177,12 @@
 }
 
 .tierBadge[data-tier='PLATINUM'] {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-color: #bfdbfe;
+  background: #f4ece5;
+  color: #7c563f;
+  border-color: #dec8b6;
 }
 
 .mySchoolBadge {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
 }

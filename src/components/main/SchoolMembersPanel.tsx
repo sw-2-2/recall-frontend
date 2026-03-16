@@ -11,6 +11,34 @@ type Props = {
   onSelectMySchool: () => void
 }
 
+function formatPhoneNumber(phone?: string | null) {
+  if (!phone) {
+    return '-'
+  }
+
+  const digits = phone.replace(/\D/g, '')
+
+  if (digits.startsWith('02')) {
+    if (digits.length === 9) {
+      return digits.replace(/^(02)(\d{3})(\d{4})$/, '$1-$2-$3')
+    }
+
+    if (digits.length === 10) {
+      return digits.replace(/^(02)(\d{4})(\d{4})$/, '$1-$2-$3')
+    }
+  }
+
+  if (digits.length === 10) {
+    return digits.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3')
+  }
+
+  if (digits.length === 11) {
+    return digits.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3')
+  }
+
+  return phone
+}
+
 function SchoolMembersPanel({
   canShowMembers,
   isVerified,
@@ -65,8 +93,23 @@ function SchoolMembersPanel({
         <ul className={styles.memberGrid}>
           {visibleMembers.map((member) => (
             <li key={member.id} className={styles.memberCard}>
-              <strong className={styles.memberName}>{member.name}</strong>
-              <span className={styles.year}>{member.graduationYear}</span>
+              <div className={styles.memberHead}>
+                <strong className={styles.memberName}>{member.name}</strong>
+              </div>
+              <dl className={styles.memberMeta}>
+                <div className={styles.metaRow}>
+                  <dt className={styles.metaLabel}>졸업</dt>
+                  <dd className={styles.metaValue}>{member.graduationYear}년</dd>
+                </div>
+                <div className={styles.metaRow}>
+                  <dt className={styles.metaLabel}>이메일</dt>
+                  <dd className={styles.metaValue}>{member.email || '-'}</dd>
+                </div>
+                <div className={styles.metaRow}>
+                  <dt className={styles.metaLabel}>전화번호</dt>
+                  <dd className={styles.metaValue}>{formatPhoneNumber(member.phone)}</dd>
+                </div>
+              </dl>
             </li>
           ))}
         </ul>

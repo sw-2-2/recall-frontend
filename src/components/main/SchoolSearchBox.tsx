@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import styles from './styles/SchoolSearchBox.module.css'
 import { getSchoolTier } from './tier'
+import type { SchoolTierMap } from './tier'
 import type { SchoolSummary } from '../../types/school'
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
   schools: SchoolSummary[]
   isLoading: boolean
   mySchoolId: number | null
+  tierMap: SchoolTierMap
   onKeywordChange: (value: string) => void
   onSelectSchool: (school: SchoolSummary) => void
 }
@@ -17,6 +19,7 @@ function SchoolSearchBox({
   schools,
   isLoading,
   mySchoolId,
+  tierMap,
   onKeywordChange,
   onSelectSchool,
 }: Props) {
@@ -63,7 +66,7 @@ function SchoolSearchBox({
 
           {!isLoading &&
             schools.map((school) => {
-              const tier = getSchoolTier(school)
+              const tier = getSchoolTier(school.id, tierMap)
 
               return (
                 <button

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './styles/MainPage.module.css'
 import MainHeader from '../components/main/SchoolSearchPannel'
 import SchoolSummaryCard from '../components/main/SchoolSummaryCard'
 import SchoolTypeTabs from '../components/main/SchoolTypeTabs'
 import SchoolDetailPanel from '../components/main/SchoolDetailPanel'
+import { buildSchoolTierMap, getSchoolTier } from '../components/main/tier'
 import { schoolLabelMap } from '../constants/schools'
 import { useMe } from '../hooks/queries/useMe'
 import { useSchools } from '../hooks/queries/useSchools'
@@ -28,6 +29,15 @@ function MainPage() {
   const removeSearchMySchool = schoolSearchQuery.schools.filter((school) => school.id !== mySchool?.id)
   const removeMySchool = schoolsQuery.data?.schools.filter((school) => school.id !== mySchool?.id)
   const filteredSchools = schoolSearchQuery.debouncedKeyword.length >= 1 ? removeSearchMySchool : removeMySchool ?? []
+  const tierMap = useMemo(
+    () =>
+      buildSchoolTierMap([
+        ...(schoolsQuery.data?.schools ?? []),
+        ...schoolSearchQuery.schools,
+        ...(mySchool ? [mySchool] : []),
+      ]),
+    [schoolsQuery.data?.schools, schoolSearchQuery.schools, mySchool],
+  )
 
   const selectedSchool =
     (mySchool?.id === selectedSchoolId ? mySchool : null) ??
@@ -71,7 +81,6 @@ function MainPage() {
     navigate('/profile')
   }
 
-  const totalRegisteredSchools = schoolsQuery.data?.schools.length ?? 0
   const searchResultCount =
     schoolSearchQuery.debouncedKeyword.length >= 1 ? removeSearchMySchool.length : filteredSchools.length
   const selectedTypeLabel = schoolLabelMap[selectedType]
@@ -82,22 +91,22 @@ function MainPage() {
 
   return (
     <div className={styles.page}>
-      <MainHeader
-        keyword={searchKeyword}
-        searchResults={removeSearchMySchool}
-        isSearchLoading={schoolSearchQuery.isFetching}
-        mySchoolId={mySchool?.id ?? null}
-        profileName={meQuery.data?.name}
-        onKeywordChange={setSearchKeyword}
-        onSelectSchool={handleSelectSchool}
-        onOpenProfile={handleMoveProfile}
-      />
-
       <section className={styles.layout}>
         <aside className={styles.leftColumn}>
           <section className={styles.filterCard}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>학교 구분</h2>
+            </div>
+            <div className={styles.searchWrap}>
+              <MainHeader
+                keyword={searchKeyword}
+                searchResults={removeSearchMySchool}
+                isSearchLoading={schoolSearchQuery.isFetching}
+                mySchoolId={mySchool?.id ?? null}
+                tierMap={tierMap}
+                onKeywordChange={setSearchKeyword}
+                onSelectSchool={handleSelectSchool}
+              />
             </div>
             <SchoolTypeTabs />
           </section>
@@ -110,6 +119,7 @@ function MainPage() {
             {mySchool && (
               <SchoolSummaryCard
                 school={mySchool}
+                tier={getSchoolTier(mySchool.id, tierMap)}
                 isSelected={selectedSchoolId === mySchool.id}
                 badgeText="내 학교"
                 isFeatured
@@ -151,6 +161,7 @@ function MainPage() {
                   <SchoolSummaryCard
                     key={school.id}
                     school={school}
+                    tier={getSchoolTier(school.id, tierMap)}
                     isSelected={selectedSchoolId === school.id}
                     onClick={setSelectedSchoolId}
                   />
@@ -169,11 +180,10 @@ function MainPage() {
             {selectedSchool && (
               <SchoolDetailPanel
                 school={selectedSchool}
+                tier={getSchoolTier(selectedSchool.id, tierMap)}
                 isMySchoolSelected={isMySchoolSelected}
                 hasMySchool={Boolean(mySchool)}
                 memberCount={membersQuery.data?.members.length ?? 0}
-                totalRegisteredSchools={totalRegisteredSchools}
-                searchResultCount={searchResultCount}
                 members={membersQuery.data?.members ?? []}
                 isMembersLoading={membersQuery.isLoading}
                 selectedTypeLabel={selectedTypeLabel}
