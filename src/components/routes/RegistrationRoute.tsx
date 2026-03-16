@@ -17,7 +17,7 @@ function RegistrationRoute() {
   }
 
   if (!isRegistered) {
-    return <Navigate to="/profile/register" replace />
+    return <Navigate to="/profile" replace />
   }
 
   return <Outlet />

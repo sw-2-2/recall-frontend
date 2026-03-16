@@ -1,12 +1,17 @@
 import style from './styles/ProfilePage.module.css'
 import { useMemo, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import favicon from '../assets/icons/jaewon-favicon.png'
 import SchoolVerificationCard from '../components/profile/SchoolVerificationCard'
 import type { ProfileForm, SchoolForm, SchoolType, VerifiedSchool } from '../types/profile.ts'
 import { createInitialSchoolForm, schoolTypeLabel, schoolTypeOrder } from '../types/profile.ts'
 import { fetchMemberProfile, updateMemberProfile, saveVerifiedSchool, fetchVerifiedSchools } from '../api/profileEdit'
+import { useAuthStore } from '../store/authStore'
 
 function ProfilePage() {
+  const navigate = useNavigate()
+  const setRegistered = useAuthStore((state) => state.setRegistered)
+
   // 조회 중 표시
   const [loading, setLoading] = useState(true)
   // 프로필 저장 중 표시
@@ -98,6 +103,7 @@ function ProfilePage() {
         })
 
         setVerifiedSchools(schools)
+        setRegistered(schools.length > 0)
       } catch (error) {
         setMessage(
           error instanceof Error
@@ -110,7 +116,7 @@ function ProfilePage() {
     }
 
     void loadProfile()
-  }, [])
+  }, [setRegistered])
 
   // 프로필 저장 함수
   const handleProfileSave = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -193,6 +199,7 @@ function ProfilePage() {
 
         // 새로 저장된 인증 학교를 목록에 추가
         setVerifiedSchools((prev) => [...prev, savedSchool])
+        setRegistered(true)
 
         // 저장이 끝난 카드의 입력 폼을 닫고,
         // 인증된 학교 카드가 보
@@ -202,6 +209,7 @@ function ProfilePage() {
         }))
 
         setMessage(`${schoolTypeLabel[type]} 학교 인증이 저장되었습니다.`)
+        navigate('/', { replace: true })
       } catch (error) {
         setMessage(
           error instanceof Error

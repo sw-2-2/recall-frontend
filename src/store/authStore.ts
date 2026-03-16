@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
 
 type AuthState = {
   isAuthenticated: boolean
@@ -12,40 +11,27 @@ type AuthState = {
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      isAuthenticated: false,
-      isInitialized: false,
-      isRegistered: false,
+  (set) => ({
+    isAuthenticated: false,
+    isInitialized: false,
+    isRegistered: false,
 
-      setAuthenticated: (value) =>
-        set({
-          isAuthenticated: value,
-        }),
-
-      setRegistered: (value) =>
-        set({
-          isRegistered: value,
-        }),
-
-      clearAuth: () =>
-        set({
-          isAuthenticated: false,
-          isRegistered: false,
-        }),
-
-      markInitialized: () => set({ isInitialized: true }),
-    }),
-    {
-      name: 're-call-auth',
-      storage: createJSONStorage(() => localStorage),
-      partialize: ({ isAuthenticated, isRegistered }) => ({
-        isAuthenticated,
-        isRegistered,
+    setAuthenticated: (value) =>
+      set({
+        isAuthenticated: value,
       }),
-      onRehydrateStorage: () => (state) => {
-        state?.markInitialized()
-      },
-    },
-  ),
+
+    setRegistered: (value) =>
+      set({
+        isRegistered: value,
+      }),
+
+    clearAuth: () =>
+      set({
+        isAuthenticated: false,
+        isRegistered: false,
+      }),
+
+    markInitialized: () => set({ isInitialized: true }),
+  }),
 )
