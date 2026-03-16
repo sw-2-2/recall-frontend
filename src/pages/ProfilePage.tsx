@@ -227,16 +227,17 @@ function ProfilePage() {
 
   // 로그아웃 함수
   const [isLoading, setIsLoading] = useState(false)
-  const setAuthenticated = useAuthStore((state) => state.setAuthenticated)
+  const clearAuth = useAuthStore((state) => state.clearAuth)
 
   const handleLogout = async () => {
     setIsLoading(true)
+
     try {
       await requestLogout()
-      setAuthenticated(false)
+      clearAuth()
       navigate(DEFAULT_SCHOOL_PATH)
     } catch (error) {
-      '로그아웃에 실패했습니다.'
+      setMessage(error instanceof Error ? error.message : '로그아웃에 실패했습니다.')
     } finally {
       setIsLoading(false)
     }
