@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import GlobalHeader from './GlobalHeader'
 import styles from './styles/ServiceLayout.module.css'
+import GlobalFooter from './GlobalFooter'
 
 function ServiceLayout() {
   return (
@@ -9,6 +10,7 @@ function ServiceLayout() {
       <main className={styles.content}>
         <Outlet />
       </main>
+      <GlobalFooter />
     </div>
   )
 }
