@@ -1,5 +1,5 @@
 import style from './styles/ProfilePage.module.css'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, type SubmitEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import favicon from '../assets/icons/jaewon-favicon.png'
 import SchoolVerificationCard from '../components/profile/SchoolVerificationCard'
@@ -7,6 +7,8 @@ import type { ProfileForm, SchoolForm, SchoolType, VerifiedSchool } from '../typ
 import { createInitialSchoolForm, schoolTypeLabel, schoolTypeOrder } from '../types/profile.ts'
 import { fetchMemberProfile, updateMemberProfile, saveVerifiedSchool, fetchVerifiedSchools } from '../api/profileEdit'
 import { useAuthStore } from '../store/authStore'
+import { requestLogout } from '../api/auth.ts'
+import { DEFAULT_SCHOOL_PATH } from '../constants/schools.ts'
 
 function ProfilePage() {
   const navigate = useNavigate()
@@ -221,9 +223,26 @@ function ProfilePage() {
       }
     }
 
+
+
   // 로그아웃 함수
-  const handleLogout = () => {
-    setMessage('아직 로그아웃 기능 연결 전입니다.')
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const setAuthenticated = useAuthStore((state) => state.setAuthenticated)
+
+  const handleLogout = async () => {
+    setIsLoading(true)
+    setErrorMessage(null)
+
+    try {
+      await requestLogout()
+      setAuthenticated(false)
+      navigate(DEFAULT_SCHOOL_PATH)
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : '로그아웃에 실패했습니다.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (loading) {

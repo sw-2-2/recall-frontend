@@ -1,7 +1,11 @@
+import { apiRequest } from "./client"
+
 export type LoginRequest = {
   email: string
   password: string
 }
+
+
 
 export type SignupRequest = {
   email: string
@@ -91,16 +95,14 @@ export async function requestLogin(payload:LoginRequest) {
   }
 }
 
-// 로그인 요청
-export async function requestLogout(payload:LogoutRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+// 로그아웃 요청
+export async function requestLogout() {
+  await apiRequest('/api/auth/logout', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    credentials: "include"
+    credentials: "include",
+    auth: true,
   })
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, '로그인 api 에러'))
-  }
 }
