@@ -1,5 +1,5 @@
 import style from './styles/ProfilePage.module.css'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, type SubmitEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import favicon from '../assets/icons/jaewon-favicon.png'
 import SchoolVerificationCard from '../components/profile/SchoolVerificationCard'
@@ -227,17 +227,19 @@ function ProfilePage() {
 
   // 로그아웃 함수
   const [isLoading, setIsLoading] = useState(false)
-  const clearAuth = useAuthStore((state) => state.clearAuth)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const setAuthenticated = useAuthStore((state) => state.setAuthenticated)
 
   const handleLogout = async () => {
     setIsLoading(true)
+    setErrorMessage(null)
 
     try {
       await requestLogout()
-      clearAuth()
+      setAuthenticated(false)
       navigate(DEFAULT_SCHOOL_PATH)
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '로그아웃에 실패했습니다.')
+      setErrorMessage(error instanceof Error ? error.message : '로그아웃에 실패했습니다.')
     } finally {
       setIsLoading(false)
     }
@@ -408,8 +410,8 @@ function ProfilePage() {
       <section className={style.sectionCard}>
         <h2 className={style.sectionTitle}>계정</h2>
         <div className={style.buttonRow}>
-          <button type="button" onClick={handleLogout} disabled={isLoading}>
-              {isLoading ? '로그아웃 중...' : '로그아웃'}
+          <button type="button" onClick={handleLogout}>
+            로그아웃
           </button>
         </div>
       </section>
