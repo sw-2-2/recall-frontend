@@ -90,6 +90,7 @@ export async function requestLogin(payload:LoginRequest) {
     credentials: 'include', // 쿠키 포함
     body: JSON.stringify(payload),
   });
+}
 
 // 로그아웃 요청
 export async function requestLogout() {
