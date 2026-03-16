@@ -174,7 +174,7 @@ async function linkExistingSchool(
   input: SchoolVerificationInput,
 ): Promise<LinkedSchoolResponse> {
   return apiRequest<LinkedSchoolResponse>(
-    `/api/users/schools/${input.type}/link`,
+    `/api/users/schools/${input.type}/connect`,
     {
       method: 'POST',
       auth: true,
