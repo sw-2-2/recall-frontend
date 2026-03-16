@@ -81,19 +81,15 @@ export async function requestSignup(payload: SignupRequest) {
 }
 
 // 로그인 요청
-export async function requestLogin(payload:LoginRequest) {
+export async function requestLogin(payload: LoginRequest) {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    credentials: "include",
-    body: JSON.stringify(payload)
-  })
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, '로그인 api 에러'))
-  }
-}
+    credentials: 'include', // 쿠키 포함
+    body: JSON.stringify(payload),
+  });
 
 // 로그아웃 요청
 export async function requestLogout() {
