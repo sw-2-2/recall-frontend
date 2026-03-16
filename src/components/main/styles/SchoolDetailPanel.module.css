@@ -1,0 +1,279 @@
+.panel {
+  display: grid;
+  gap: 20px;
+}
+
+.summaryCard {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.visualWrap {
+  min-height: 320px;
+}
+
+.heroImage,
+.heroFallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+}
+
+.heroImage {
+  object-fit: cover;
+}
+
+.heroFallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #93c5fd 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-size: clamp(72px, 10vw, 120px);
+  font-weight: 800;
+}
+
+.summaryBody {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.labelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.typeBadge,
+.tierBadge,
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.typeBadge {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.statusBadge {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.tierBadge {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+}
+
+.tierBadge[data-tier='BRONZE'] {
+  background: #fff7ed;
+  color: #b45309;
+  border-color: #fed7aa;
+}
+
+.tierBadge[data-tier='SILVER'] {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.tierBadge[data-tier='GOLD'] {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.tierBadge[data-tier='PLATINUM'] {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.schoolName {
+  margin-top: 14px;
+  color: #0f172a;
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.schoolAddress {
+  margin-top: 12px;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.primaryAction {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 12px 20px rgba(37, 99, 235, 0.2);
+}
+
+.secondaryAction {
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.primaryAction:hover,
+.secondaryAction:hover {
+  transform: translateY(-1px);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.statCard {
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #f8fafc;
+}
+
+.statLabel {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.statValue {
+  margin-top: 10px;
+  display: block;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  width: fit-content;
+}
+
+.tab {
+  min-width: 92px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.tabActive {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.content {
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: #ffffff;
+  padding: 20px;
+}
+
+.infoBlock {
+  display: grid;
+  gap: 10px;
+}
+
+.sectionLabel {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.infoText {
+  color: #0f172a;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+@media (max-width: 960px) {
+  .summaryCard {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .topRow {
+    flex-direction: column;
+  }
+
+  .actionRow {
+    width: 100%;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    flex: 1;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

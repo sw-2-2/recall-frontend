@@ -1,3 +1,5 @@
+import { useAuthStore } from '../store/authStore'
+
 const API_BASE_URL = import.meta.env.DEV
   ? (import.meta.env.VITE_API_BASE_URL ?? '')
   : ''
@@ -11,6 +13,14 @@ type ErrorResponse = {
   error?: string
 }
 
+const UNAUTHORIZED_STATUSES = new Set([401, 403])
+const AUTH_REDIRECT_EXCLUDED_PATHS = new Set([
+  '/api/auth/login',
+  '/api/users/signup',
+])
+
+let isRedirectingToLogin = false
+
 
 function getXsrfToken(): string | undefined {
   return document.cookie
@@ -19,6 +29,7 @@ function getXsrfToken(): string | undefined {
     ?.split('=')[1]
 }
 
+// 내 정보를 한 번 조회해서 쿠키를 받아오도록 함.
 export const ensureXsrfToken = async () => {
   if (getXsrfToken()) {
     return
@@ -33,6 +44,38 @@ export const ensureXsrfToken = async () => {
   }
 }
 
+const redirectToLogin = () => {
+  if (typeof window === 'undefined' || isRedirectingToLogin) {
+    return
+  }
+
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`
+
+  if (window.location.pathname === '/login') {
+    return
+  }
+
+  isRedirectingToLogin = true
+
+  const loginUrl = new URL('/login', window.location.origin)
+  loginUrl.searchParams.set('redirect', currentPath)
+
+  window.location.replace(loginUrl.toString())
+}
+
+const handleUnauthorizedResponse = (path: string) => {
+  const { clearAuth, markInitialized } = useAuthStore.getState()
+
+  clearAuth()
+  markInitialized()
+
+  if (AUTH_REDIRECT_EXCLUDED_PATHS.has(path)) {
+    return
+  }
+
+  redirectToLogin()
+}
+
 
 const buildHeaders = (
   headers?: HeadersInit,
@@ -45,11 +88,10 @@ const buildHeaders = (
     nextHeaders.set('Content-Type', 'application/json')
   }
 
+  // 쿠키를 포함하는 부분. -> xsrf 토큰 가져오기.
   if (auth) {
     const xsrfToken = getXsrfToken()
 
-    console.log(xsrfToken)
-    
     if (xsrfToken && !nextHeaders.has('X-XSRF-TOKEN')) {
       nextHeaders.set('X-XSRF-TOKEN', xsrfToken)
     }
@@ -68,10 +110,16 @@ const readErrorMessage = async (response: Response) => {
   }
 }
 
+
+// fetch 함수. 기본 호출 설정을 넣었고, auth를 true로 넣으면 쿠키를 포함하도록 함
 export const apiRequest = async <T>(
   path: string,
   { auth = false, headers, body, credentials, ...init }: RequestOptions = {},
 ): Promise<T> => {
+  if (auth && !getXsrfToken()) {
+    await ensureXsrfToken()
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     body,
@@ -80,6 +128,10 @@ export const apiRequest = async <T>(
   })
 
   if (!response.ok) {
+    if (auth && UNAUTHORIZED_STATUSES.has(response.status)) {
+      handleUnauthorizedResponse(path)
+    }
+
     throw new Error(await readErrorMessage(response))
   }
 

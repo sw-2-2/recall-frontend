@@ -16,7 +16,9 @@ function GlobalHeader() {
         <nav className={styles.nav}>
           <NavLink
             to="/profile"
-            className={styles.link}
+            className={({ isActive }) =>
+              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+            }
             aria-label="프로필"
             style={{ backgroundImage: `url(${userIcon})` }}
           />
