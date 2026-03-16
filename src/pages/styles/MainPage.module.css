@@ -41,6 +41,38 @@
   margin-top: 16px;
   display: grid;
   gap: 14px;
+
+  /* 리스트 최대 높이 */
+  max-height: clamp(360px, 45vh, 520px);
+  /* 세로 스크롤바 생성 */
+  overflow-y: auto;
+
+  padding-right: 6px;
+  position: relative;
+}
+
+/* 스크롤 스타일 커스텀 */
+.schoolList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.schoolList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.schoolList::-webkit-scrollbar-thumb {
+  background: #c9d6e4;
+  border-radius: 6px;
+}
+
+/* 마지막 파트 흐려짐 효과 */
+
+.schoolList::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  height: 24px;
+  background: linear-gradient(to bottom, transparent, white);
 }
 
 .registerButton {
@@ -142,5 +174,13 @@
 @media (max-width: 960px) {
   .topSection {
     grid-template-columns: 1fr;
+  }
+
+  .schoolList {
+    max-height: 320px;
+  }
+
+  .detailCard {
+    position: static;
   }
 }

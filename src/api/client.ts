@@ -47,6 +47,9 @@ const buildHeaders = (
 
   if (auth) {
     const xsrfToken = getXsrfToken()
+
+    console.log(xsrfToken)
+    
     if (xsrfToken && !nextHeaders.has('X-XSRF-TOKEN')) {
       nextHeaders.set('X-XSRF-TOKEN', xsrfToken)
     }
