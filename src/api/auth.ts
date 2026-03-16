@@ -1,157 +1,63 @@
-// import { apiRequest } from './client'
-// import type { OAuthLoginRequest, OAuthLoginResponse, OAuthProvider } from '../types/auth'
-
-// export const requestOAuthLogin = (provider: OAuthProvider, payload: OAuthLoginRequest) =>
-//   apiRequest<OAuthLoginResponse>(`/api/auth/oauth/${provider}`, {
-//     method: 'POST',
-//     body: JSON.stringify(payload),
-//   })
-
-export type OAuthProvider = 'kakao'
-
-export type OAuthRequest = {
-  code: string
-  redirectUri: string
-}
-
-export type OAuthUser = {
-  oauthId: string
-  provider: OAuthProvider
+export type LoginRequest = {
   email: string
-  name: string
-  isRegistered: boolean
+  password: string
 }
 
-export type OAuthResponse = {
-  accessToken: string
-  refreshToken: string
-  expiresIn: number
-  tokenType: 'Bearer'
-  user: OAuthUser
-}
-
-export type AuthSession = OAuthResponse
-
-export type AuthMeResponse =
-  | {
-      authenticated: false
-      isRegistered: false
-      user: null
-    }
-  | {
-      authenticated: true
-      isRegistered: boolean
-      user: OAuthUser
-    }
-
-const AUTH_SESSION_KEY = 'auth.session'
-
-const KAKAO_EXISTING_USER_CODE = 'kakao-existing-user'
-const KAKAO_NEW_USER_CODE = 'kakao-new-user'
-
-function wait(ms = 300) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-export async function requestOAuthLogin(provider: OAuthProvider, request: OAuthRequest): Promise<OAuthResponse> {
-  await wait()
-
-  const isRegistered = request.code === KAKAO_EXISTING_USER_CODE
-  const timestamp = Date.now().toString(36)
-
-  return {
-    accessToken: `mock-access-token-${timestamp}`,
-    refreshToken: `mock-refresh-token-${timestamp}`,
-    expiresIn: 3600,
-    tokenType: 'Bearer',
-    user: {
-      oauthId: `oauth-${provider}-${timestamp}`,
-      provider,
-      email: isRegistered ? 'registered@recall.kr' : 'new-user@recall.kr',
-      name: isRegistered ? '기존 회원' : '신규 회원',
-      isRegistered,
-    },
-  }
-}
-
-export async function requestAuthMe(): Promise<AuthMeResponse> {
-  await wait(200)
-  const session = readAuthSession()
-
-  if (!session) {
-    return {
-      authenticated: false,
-      isRegistered: false,
-      user: null,
-    }
-  }
-
-  return {
-    authenticated: true,
-    isRegistered: session.user.isRegistered,
-    user: session.user,
-  }
-}
-
-export function readAuthSession(): AuthSession | null {
-  const raw = localStorage.getItem(AUTH_SESSION_KEY)
-  if (!raw) return null
-
-  try {
-    return JSON.parse(raw) as AuthSession
-  } catch {
-    return null
-  }
-}
-
-export function writeAuthSession(session: AuthSession) {
-  localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session))
-}
-
-export function clearAuthSession() {
-  localStorage.removeItem(AUTH_SESSION_KEY)
-}
-
-export function markUserRegistered(session: AuthSession): AuthSession {
-  const nextSession = {
-    ...session,
-    user: {
-      ...session.user,
-      isRegistered: true,
-    },
-  }
-  writeAuthSession(nextSession)
-  return nextSession
-}
-
-
-
-export type UserSignupRequest = {
+export type SignupRequest = {
   email: string
+  password: string
   name: string
   phone?: string
   address?: string
 }
 
-export async function requestUserSignup(payload: UserSignupRequest, accessToken: string): Promise<void> {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL
-  if (!baseUrl) {
-    throw new Error('VITE_API_BASE_URL is not set')
-  }
+export type SignupResponse = {
+  id: number
+  email: string
+  name: string
+  phone: string | null
+  address: string | null
+}
 
-  const response = await fetch(`${baseUrl}/api/users`, {
+// 에러
+type ErrorResponse = {
+  code?: string
+  message?: string
+}
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+
+
+// 회원가입 요청
+export async function requestSignup(payload: SignupRequest) {
+  const response = await fetch(`${API_BASE_URL}/api/users/signup`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(payload),
+    credentials: 'include', // 쿠키를 포함할건지 말건지.
+    body: JSON.stringify(payload)
   })
 
   if (!response.ok) {
-    const text = await response.text()
-    throw new Error(text || `회원가입 API 요청이 실패했습니다. (${response.status})`)
+    const data = (await response.json()) as ErrorResponse
+    throw new Error(data.message ?? '회원가입 api 에러')
+  }
+
+  return (await response.json()) as SignupResponse
+}
+
+// 로그인 요청
+export async function requestLogin(payload:LoginRequest) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: "include",
+    body: JSON.stringify(payload)
+  })
+  if (!response.ok) {
+    const data = (await response.json()) as ErrorResponse
+    throw new Error(data.message ?? '로그인 api 에러')
   }
 }
-export const MOCK_EXISTING_USER_CODE = KAKAO_EXISTING_USER_CODE
-export const MOCK_NEW_USER_CODE = KAKAO_NEW_USER_CODE

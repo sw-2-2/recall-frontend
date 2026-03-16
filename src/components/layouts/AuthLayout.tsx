@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom'
-import PageFooter from '../ui/PageFooter'
 
 function AuthLayout() {
   return (
@@ -7,7 +6,6 @@ function AuthLayout() {
       <div className="appMainLogin">
         <Outlet />
       </div>
-      <PageFooter />
     </div>
   )
 }

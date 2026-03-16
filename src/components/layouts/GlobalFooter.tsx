@@ -1,6 +1,6 @@
-import styles from '../styles/PageFooter.module.css'
+import styles from './styles/GlobalFooter.module.css'
 
-function PageFooter() {
+function GlobalFooter() {
   return (
     <footer className={styles.footer}>
       <div>RE:CALL</div>
@@ -10,4 +10,4 @@ function PageFooter() {
   )
 }
 
-export default PageFooter
+export default GlobalFooter
