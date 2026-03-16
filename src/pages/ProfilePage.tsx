@@ -69,20 +69,30 @@ function combinePhoneNumber(first: string, second: string, third: string) {
 
 function splitAddress(address?: string | null) {
   const parts = (address || '').trim().split(/\s+/).filter(Boolean)
+  const normalizeCity = (value: string) => value.replace(/시$/, '')
+  const normalizeDistrict = (value: string) => value.replace(/구$/, '')
 
   if (parts.length === 0) {
     return ['', '']
   }
 
   if (parts.length === 1) {
-    return [parts[0], '']
+    return [normalizeCity(parts[0]), '']
   }
 
-  return [parts[0], parts.slice(1).join(' ')]
+  return [normalizeCity(parts[0]), normalizeDistrict(parts.slice(1).join(' '))]
 }
 
 function combineAddress(city: string, district: string) {
-  return [city.trim(), district.trim()].filter(Boolean).join(' ')
+  const normalizedCity = city.trim().replace(/시$/, '')
+  const normalizedDistrict = district.trim().replace(/구$/, '')
+
+  return [
+    normalizedCity ? `${normalizedCity}시` : '',
+    normalizedDistrict ? `${normalizedDistrict}구` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 function ProfilePage() {
@@ -453,34 +463,40 @@ function ProfilePage() {
               <label className={style.inputGroup}>
                 <span className={style.fieldLabel}>주소</span>
                 <div className={`${style.segmentedRow} ${style.addressRow}`}>
-                  <input
-                    type="text"
-                    value={addressCity}
-                    onChange={(e) =>
-                      setProfileForm((prev) => {
-                        const [, district] = splitAddress(prev.address)
-                        return {
-                          ...prev,
-                          address: combineAddress(e.target.value, district),
-                        }
-                      })
-                    }
-                    placeholder="서울시"
-                  />
-                  <input
-                    type="text"
-                    value={addressDistrict}
-                    onChange={(e) =>
-                      setProfileForm((prev) => {
-                        const [city] = splitAddress(prev.address)
-                        return {
-                          ...prev,
-                          address: combineAddress(city, e.target.value),
-                        }
-                      })
-                    }
-                    placeholder="관악구"
-                  />
+                  <div className={style.suffixField}>
+                    <input
+                      type="text"
+                      value={addressCity}
+                      onChange={(e) =>
+                        setProfileForm((prev) => {
+                          const [, district] = splitAddress(prev.address)
+                          return {
+                            ...prev,
+                            address: combineAddress(e.target.value, district),
+                          }
+                        })
+                      }
+                      placeholder="서울"
+                    />
+                    <span className={style.suffixLabel}>시</span>
+                  </div>
+                  <div className={style.suffixField}>
+                    <input
+                      type="text"
+                      value={addressDistrict}
+                      onChange={(e) =>
+                        setProfileForm((prev) => {
+                          const [city] = splitAddress(prev.address)
+                          return {
+                            ...prev,
+                            address: combineAddress(city, e.target.value),
+                          }
+                        })
+                      }
+                      placeholder="관악"
+                    />
+                    <span className={style.suffixLabel}>구</span>
+                  </div>
                 </div>
               </label>
             </div>

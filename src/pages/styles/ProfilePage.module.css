@@ -303,7 +303,21 @@
 }
 
 .addressRow {
-  grid-template-columns: minmax(160px, 220px) minmax(220px, 1fr);
+  grid-template-columns: minmax(180px, 220px) minmax(220px, 260px);
+}
+
+.suffixField {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.suffixLabel {
+  color: #8e7f71;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .buttonRow {
