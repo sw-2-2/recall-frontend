@@ -5,29 +5,15 @@ import { useNavigate } from 'react-router-dom'
 import { DEFAULT_SCHOOL_PATH } from '../constants/schools'
 import { useAuthStore } from '../store/authStore'
 import { getMe } from '../api/users'
-
-function splitPhoneNumber(phone?: string | null) {
-  const digits = (phone || '').replace(/\D/g, '').slice(0, 11)
-
-  if (digits.startsWith('02')) {
-    if (digits.length <= 2) return [digits, '', '']
-    if (digits.length <= 6) return ['02', digits.slice(2), '']
-    return ['02', digits.slice(2, digits.length - 4), digits.slice(-4)]
-  }
-
-  if (digits.length <= 3) return [digits, '', '']
-  if (digits.length <= 7) return [digits.slice(0, 3), digits.slice(3), '']
-
-  return [
-    digits.slice(0, 3),
-    digits.slice(3, digits.length - 4),
-    digits.slice(-4),
-  ]
-}
-
-function combinePhoneNumber(first: string, second: string, third: string) {
-  return `${first}${second}${third}`.replace(/\D/g, '')
-}
+import {
+  combineMobilePhoneNumber,
+  hasMobilePhoneInput,
+  isCompleteMobilePhoneSegments,
+  isValidMobilePhoneNumber,
+  sanitizeMobilePhonePart,
+  splitMobilePhoneNumber,
+  type MobilePhoneSegments,
+} from '../utils/mobilePhone'
 
 function splitAddress(address?: string | null) {
   const parts = (address || '').trim().split(/\s+/).filter(Boolean)
@@ -83,7 +69,12 @@ function LoginPage() {
     password?: string
     passwordConfirm?: string
     name?: string
+    phone?: string
   }>({})
+
+  const [signupPhoneSegments, setSignupPhoneSegments] = useState<MobilePhoneSegments>({
+    ...splitMobilePhoneNumber(''),
+  })
 
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -114,10 +105,16 @@ function LoginPage() {
 
   const validateSignup = () => {
     const newErrors: typeof errors = {}
+    const signupPhone = combineMobilePhoneNumber(signupPhoneSegments)
 
     if (!signupForm.email) newErrors.email = '이메일을 입력해주세요.'
     if (!signupForm.password) newErrors.password = '비밀번호를 입력해주세요.'
     if (!signupForm.name) newErrors.name = '이름을 입력해주세요.'
+    if (hasMobilePhoneInput(signupPhoneSegments) && !isCompleteMobilePhoneSegments(signupPhoneSegments)) {
+      newErrors.phone = '휴대폰 번호 11자리를 모두 입력해주세요.'
+    } else if (signupPhone && !isValidMobilePhoneNumber(signupPhone)) {
+      newErrors.phone = '휴대폰 번호를 정확히 입력해주세요.'
+    }
 
     if (signupForm.password !== signupForm.passwordConfirm) {
       newErrors.passwordConfirm = '비밀번호가 일치하지 않습니다.'
@@ -136,11 +133,13 @@ function LoginPage() {
     setMessage(null)
 
     try {
+      const signupPhone = combineMobilePhoneNumber(signupPhoneSegments)
+
       await requestSignup({
         email: signupForm.email,
         password: signupForm.password,
         name: signupForm.name,
-        phone: signupForm.phone || undefined,
+        phone: signupPhone || undefined,
         address: signupForm.address || undefined,
       })
 
@@ -161,7 +160,15 @@ function LoginPage() {
     }
   }
 
-  const [phoneFirst, phoneSecond, phoneThird] = splitPhoneNumber(signupForm.phone)
+  const updateSignupPhone = (nextPhone: MobilePhoneSegments) => {
+    setSignupPhoneSegments(nextPhone)
+    setErrors((prev) => ({
+      ...prev,
+      phone: undefined,
+    }))
+  }
+
+  const { first: phoneFirst, second: phoneSecond, third: phoneThird } = signupPhoneSegments
   const [city, district] = splitAddress(signupForm.address)
 
   return (
@@ -206,6 +213,7 @@ function LoginPage() {
               onClick={() => {
                 setMode('signup')
                 setMessage(null)
+                setSignupPhoneSegments(splitMobilePhoneNumber(''))
                 setSignupForm({
                   email: '',
                   password: '',
@@ -306,17 +314,14 @@ function LoginPage() {
               <div className={style.segmentedRow}>
                 <input
                   className={style.Input}
+                  type="tel"
+                  inputMode="numeric"
                   value={phoneFirst}
                   maxLength={3}
                   onChange={(e) => {
-                    const [, s, t] = splitPhoneNumber(signupForm.phone)
-                    setSignupForm({
-                      ...signupForm,
-                      phone: combinePhoneNumber(
-                        e.target.value.replace(/\D/g, '').slice(0, 3),
-                        s,
-                        t,
-                      ),
+                    updateSignupPhone({
+                      ...signupPhoneSegments,
+                      first: sanitizeMobilePhonePart(e.target.value, 3),
                     })
                   }}
                   placeholder="010"
@@ -324,17 +329,14 @@ function LoginPage() {
                 <span className={style.segmentDivider}>-</span>
                 <input
                   className={style.Input}
+                  type="tel"
+                  inputMode="numeric"
                   value={phoneSecond}
                   maxLength={4}
                   onChange={(e) => {
-                    const [f, , t] = splitPhoneNumber(signupForm.phone)
-                    setSignupForm({
-                      ...signupForm,
-                      phone: combinePhoneNumber(
-                        f,
-                        e.target.value.replace(/\D/g, '').slice(0, 4),
-                        t,
-                      ),
+                    updateSignupPhone({
+                      ...signupPhoneSegments,
+                      second: sanitizeMobilePhonePart(e.target.value, 4),
                     })
                   }}
                   placeholder="1234"
@@ -342,22 +344,20 @@ function LoginPage() {
                 <span className={style.segmentDivider}>-</span>
                 <input
                   className={style.Input}
+                  type="tel"
+                  inputMode="numeric"
                   value={phoneThird}
                   maxLength={4}
                   onChange={(e) => {
-                    const [f, s] = splitPhoneNumber(signupForm.phone)
-                    setSignupForm({
-                      ...signupForm,
-                      phone: combinePhoneNumber(
-                        f,
-                        s,
-                        e.target.value.replace(/\D/g, '').slice(0, 4),
-                      ),
+                    updateSignupPhone({
+                      ...signupPhoneSegments,
+                      third: sanitizeMobilePhonePart(e.target.value, 4),
                     })
                   }}
                   placeholder="5678"
                 />
               </div>
+              {errors.phone && <p className={style.ErrorText}>{errors.phone}</p>}
 
               <div className={`${style.segmentedRow} ${style.addressRow}`}>
                 <div className={style.suffixField}>
