@@ -1,161 +1,454 @@
 .pageContainer {
-  padding: 24px 5%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+  display: grid;
+  gap: 16px;
+}
+
+.loadingState {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--ink-soft);
 }
 
 .sectionCard {
-  border-width: 0 0 1px;
-  border-style: solid;
-  border-color: #dddddd;
-  margin-bottom: 32px;
-  padding: 0 16px 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper-strong);
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.profileTopCard {
+  display: grid;
+  grid-template-columns: minmax(240px, 276px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .sectionTitle {
-  font-size: 20px;
+  color: var(--ink);
+  font-size: 15px;
   font-weight: 700;
-  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+.profileSidebar {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: 18px;
+  border: 1px solid #ede2d6;
+  border-radius: 20px;
+  background: var(--surface-soft);
+}
+
+.profileMain {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 14px;
+  min-width: 0;
 }
 
 .profileEditForm {
   display: flex;
-  align-items: flex-start;
-  flex-direction: row;
-  justify-content: flex-start;
-  gap: 32px;
-  margin-bottom: 5vh;
-  flex-wrap: wrap;
+  flex-direction: column;
+  min-height: 100%;
 }
 
-.profileImageBlock {
+.summaryHeader {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  min-width: 140px;
+  gap: 14px;
+  min-width: 0;
+}
+
+.photoTrigger {
+  position: relative;
+  flex: none;
+  display: block;
+  width: 84px;
+  height: 84px;
+  overflow: visible;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.photoTrigger:hover {
+  transform: translateY(-2px);
+}
+
+.photoTrigger:hover .photoFrame {
+  border-color: var(--accent-soft-strong);
+  box-shadow: 0 14px 28px rgba(34, 25, 18, 0.08);
+}
+
+.photoFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #e4d9cc;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fbf7f2 0%, #f3e8dc 100%);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .profilePhoto {
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.profilePhotoFilled {
   object-fit: cover;
+  padding: 0;
+}
+
+.profilePhotoPlaceholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(197, 173, 152, 0.2) 0, rgba(197, 173, 152, 0.2) 18px, transparent 19px),
+    radial-gradient(circle at 50% 77%, rgba(197, 173, 152, 0.16) 0, rgba(197, 173, 152, 0.16) 26px, transparent 27px),
+    linear-gradient(180deg, #fbf7f2 0%, #f2e6da 100%);
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.actionButton:hover {
+  transform: translateY(-1px);
+}
+
+.photoHint {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 8px 14px rgba(131, 73, 41, 0.2);
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.summaryIdentity {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 8px;
+}
+
+.profileName {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.summaryRow {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px 0;
+}
+
+.summaryRow + .summaryRow {
+  border-top: 1px solid #e7dccf;
+}
+
+.summaryMeta {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.summaryLabel {
+  margin: 0;
+  color: #7d746d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.summaryValue {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .profileFields {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-content: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 732px);
+  gap: 14px;
 }
 
 .inputGroup {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
-  min-width: 220px;
-  flex: 1;
+  min-width: 0;
 }
 
-.fullWidth {
-  width: 100%;
-  flex-basis: 100%;
+.fieldLabel {
+  color: #7b736c;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .inputGroup input,
 .inputGroup select {
-  border: 1px solid #d9d9d9;
-  border-radius: 10px;
-  padding: 10px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  border: 1px solid #ddd5cc;
+  border-radius: 12px;
+  padding: 0 14px;
   font-size: 14px;
   outline: none;
-  background-color: #ffffff;
+  background: #ffffff;
+  color: var(--ink);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.inputGroup input::placeholder,
+.inputGroup select::placeholder {
+  color: #a2968b;
 }
 
 .inputGroup input:focus,
 .inputGroup select:focus {
-  border-color: #999999;
+  border-color: var(--accent-soft-strong);
+  box-shadow: 0 0 0 4px rgba(165, 100, 63, 0.08);
+}
+
+.inputGroup input:disabled,
+.inputGroup select:disabled {
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  border-color: #e4d8cc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.segmentedRow {
+  display: grid;
+  grid-template-columns: minmax(96px, 120px) 12px minmax(120px, 1fr) 12px minmax(120px, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.segmentedRow input {
+  width: 100%;
+}
+
+.segmentDivider {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #97897b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.addressRow {
+  grid-template-columns: minmax(180px, 220px) minmax(220px, 260px);
+}
+
+.suffixField {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.suffixLabel {
+  color: #8e7f71;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .buttonRow {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-  width: 100%;
-  padding-left: 0;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 20px;
 }
 
-.buttonRow button {
-  border: 1px solid #d9d9d9;
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.primaryButton {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(131, 73, 41, 0.18);
 }
 
-.buttonRow button:hover {
-  background-color: #f7f7f7;
+.secondaryButton {
+  border: 1px solid #ddd5cc;
+  background: var(--surface-soft);
+  color: var(--ink);
 }
 
 .schoolTypeGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(260px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
   align-items: stretch;
 }
 
-.messageBox {
-  margin-top: 16px;
-  padding: 12px 16px;
-  border: 1px solid #dddddd;
-  border-radius: 10px;
-  background-color: #fafafa;
+.accountRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.accountMeta {
+  color: var(--ink-soft);
   font-size: 14px;
-  color: #333333;
+}
+
+.messageBox {
+  justify-self: start;
+  padding: 10px 14px;
+  border: 1px solid #e4d8cc;
+  border-radius: 14px;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 @media (max-width: 1200px) {
   .schoolTypeGrid {
-    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
+  .profileTopCard {
+    grid-template-columns: 1fr;
+  }
+
+  .profileSidebar {
+    padding: 18px;
+  }
+
+  .profileMain {
+    grid-template-rows: auto;
+  }
+
+  .profileEditForm {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .pageContainer {
+    padding: 14px 16px 24px;
+  }
+
+  .sectionCard {
+    padding: 16px;
+  }
+
+  .summaryHeader {
+    align-items: flex-start;
+  }
+
   .schoolTypeGrid {
     grid-template-columns: 1fr;
   }
 
-  .profileEditForm {
-    flex-direction: column;
+  .buttonRow,
+  .accountRow {
+    justify-content: stretch;
   }
 
-  .profileFields {
+  .actionButton {
     width: 100%;
   }
 
-  .schoolTypeCard {
-    min-height: 320px;
-    padding: 20px 16px 24px;
+  .profileFields {
+    grid-template-columns: 1fr;
   }
 
-  .schoolTypeHeader {
-    margin-bottom: 20px;
+  .inputGroup input,
+  .inputGroup select {
+    width: 100%;
   }
 
-  .schoolName {
-    font-size: 18px;
+  .segmentedRow {
+    grid-template-columns: minmax(72px, 96px) 12px minmax(88px, 1fr) 12px minmax(88px, 1fr);
   }
 
-  .schoolMeta {
-    font-size: 14px;
+  .addressRow {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .addButtonCenter {
-    width: 68px;
-    height: 68px;
-    font-size: 34px;
+  .accountRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .photoTrigger {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profileName {
+    font-size: 19px;
   }
 }

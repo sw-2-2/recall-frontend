@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './styles/MainPage.module.css'
 import MainHeader from '../components/main/SchoolSearchPannel'
 import SchoolSummaryCard from '../components/main/SchoolSummaryCard'
-import SchoolMembersPanel from '../components/main/SchoolMembersPanel'
+import SchoolTypeTabs from '../components/main/SchoolTypeTabs'
+import SchoolDetailPanel from '../components/main/SchoolDetailPanel'
+import { buildSchoolTierMap, getSchoolTier } from '../components/main/tier'
 import { schoolLabelMap } from '../constants/schools'
 import { useMe } from '../hooks/queries/useMe'
 import { useSchools } from '../hooks/queries/useSchools'
@@ -19,50 +21,52 @@ function MainPage() {
   const selectedSchoolId = useMainPageStore((state) => state.selectedSchoolId)
   const setSelectedSchoolId = useMainPageStore((state) => state.setSelectedSchoolId)
 
-
-  const meQuery = useMe() // 내 정보와 연결된 학교 조회
-  const schoolsQuery = useSchools(selectedType) // 선택된 초중고 타입의 기본학교 목록조회
-  const schoolSearchQuery = useSchoolSearch(selectedType, searchKeyword) // 검색어가 들어오면 학교 검색
+  const meQuery = useMe()
+  const schoolsQuery = useSchools(selectedType)
+  const schoolSearchQuery = useSchoolSearch(selectedType, searchKeyword)
 
   const mySchool = meQuery.data?.schools.find((school) => school.type === selectedType) ?? null
-
-  console.log(schoolSearchQuery.schools, '검색해서 나온애')
-  console.log(schoolsQuery.data?.schools, '지금 가지고 있는 학교정보들')
-
-  // 타입별 학교들 중 내 학교는 제외
   const removeSearchMySchool = schoolSearchQuery.schools.filter((school) => school.id !== mySchool?.id)
   const removeMySchool = schoolsQuery.data?.schools.filter((school) => school.id !== mySchool?.id)
-  console.log(removeMySchool, removeSearchMySchool, '내학교는제외')
-
-  // 나의 학교를 리스트에서 제외하도록 구성
   const filteredSchools = schoolSearchQuery.debouncedKeyword.length >= 1 ? removeSearchMySchool : removeMySchool ?? []
-
+  const tierMap = useMemo(
+    () =>
+      buildSchoolTierMap([
+        ...(schoolsQuery.data?.schools ?? []),
+        ...schoolSearchQuery.schools,
+        ...(mySchool ? [mySchool] : []),
+      ]),
+    [schoolsQuery.data?.schools, schoolSearchQuery.schools, mySchool],
+  )
 
   const selectedSchool =
     (mySchool?.id === selectedSchoolId ? mySchool : null) ??
     filteredSchools.find((school) => school.id === selectedSchoolId) ?? null
 
+  const isSelectedVisibleSchool =
+    selectedSchoolId !== null &&
+    (
+      selectedSchoolId === mySchool?.id ||
+      filteredSchools.some((school) => school.id === selectedSchoolId)
+    )
+  const fallbackSchoolId = mySchool?.id ?? filteredSchools[0]?.id ?? null
 
-  const isSelectedFilteredList = selectedSchoolId !== null && filteredSchools.some((school) => school.id === selectedSchoolId)
-  const fallbackSchoolId = filteredSchools[0]?.id ?? null
-
-  // 유즈이펙트가 무한루프하지 않도록 구성 (오후에 할 것)
   useEffect(() => {
+    if (meQuery.isLoading) {
+      return
+    }
 
-    // 현재 보이는 학교가 있고 그게 있는거면 그거 그대로 선택
-    if (isSelectedFilteredList) {
+    if (isSelectedVisibleSchool) {
       return
     }
 
     if (selectedSchoolId !== fallbackSchoolId) {
       setSelectedSchoolId(fallbackSchoolId)
     }
-  }, [selectedSchoolId, setSelectedSchoolId, isSelectedFilteredList, fallbackSchoolId])
+  }, [meQuery.isLoading, selectedSchoolId, setSelectedSchoolId, isSelectedVisibleSchool, fallbackSchoolId])
 
-  // 내 학교를 선택했나요?
   const isMySchoolSelected = mySchool?.id === selectedSchoolId
 
-  // 선택된 학교의 멤버 목록을 가져오는 훅 ㅎ출
   const membersQuery = useSchoolMembers({
     schoolId: selectedSchoolId,
     enabled: isMySchoolSelected,
@@ -77,134 +81,129 @@ function MainPage() {
     navigate('/profile')
   }
 
+  const searchResultCount =
+    schoolSearchQuery.debouncedKeyword.length >= 1 ? removeSearchMySchool.length : filteredSchools.length
+  const selectedTypeLabel = schoolLabelMap[selectedType]
+  const searchTitle =
+    schoolSearchQuery.debouncedKeyword.length >= 1
+      ? `"${schoolSearchQuery.debouncedKeyword}"`
+      : selectedTypeLabel
+
   return (
     <div className={styles.page}>
-      <MainHeader
-        keyword={searchKeyword}
-        searchResults={removeSearchMySchool}
-        isSearchLoading={schoolSearchQuery.isFetching}
-        mySchoolId={mySchool?.id ?? null}
-        onKeywordChange={setSearchKeyword}
-        onSelectSchool={handleSelectSchool}
-      />
-
-      <section className={styles.topSection}>
-        <div className={styles.listColumn}>
-          {mySchool && (
-            <div className={styles.sectionBlock}>
-              <div className={styles.sectionHead}>
-                <h2>내 {schoolLabelMap[selectedType]}</h2>
-                <p>
-                  {
-                    meQuery.data?.name.length === 0
-                    ? '학교를 인증하면 동창 정보를 확인하실 수 있습니다.'
-                    : ''
-                  }
-                </p>
-              </div>
-              <SchoolSummaryCard
-                school={mySchool}
-                isSelected={selectedSchoolId === mySchool.id}
-                badgeText="내 학교"
-                onClick={setSelectedSchoolId}
+      <section className={styles.layout}>
+        <aside className={styles.leftColumn}>
+          <section className={styles.filterCard}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>학교 구분</h2>
+            </div>
+            <div className={styles.searchWrap}>
+              <MainHeader
+                keyword={searchKeyword}
+                searchResults={removeSearchMySchool}
+                isSearchLoading={schoolSearchQuery.isFetching}
+                mySchoolId={mySchool?.id ?? null}
+                tierMap={tierMap}
+                onKeywordChange={setSearchKeyword}
+                onSelectSchool={handleSelectSchool}
               />
             </div>
-          )}
+            <SchoolTypeTabs />
+          </section>
 
-          {!mySchool && (
-            <div className={styles.sectionBlock}>
-              <div className={styles.sectionHead}>
-                <h2>내 {schoolLabelMap[selectedType]}</h2>
-                <p>아직 등록된 내 학교가 없습니다. 학교를 등록하면 내 학교 카드와 동창 정보를 확인할 수 있습니다.</p>
-              </div>
+          <section className={styles.mySchoolCard}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>내 학교</h2>
+            </div>
 
+            {mySchool && (
+              <SchoolSummaryCard
+                school={mySchool}
+                tier={getSchoolTier(mySchool.id, tierMap)}
+                isSelected={selectedSchoolId === mySchool.id}
+                badgeText="내 학교"
+                isFeatured
+                onClick={setSelectedSchoolId}
+              />
+            )}
+
+            {!mySchool && (
               <button
                 type="button"
-                className={styles.registerButton}
+                className={styles.emptyAction}
                 onClick={handleMoveProfile}
               >
-                + 학교 등록하기
+                학교 등록
               </button>
-            </div>
-          )}
+            )}
+          </section>
 
-          <div className={styles.sectionBlock}>
-            <div className={styles.sectionHead}>
-              <h2>학교 리스트</h2>
-              <p>
-                re:call에 등록된 학교
-              </p>
+          <section className={styles.listCard}>
+            <div className={styles.listHeader}>
+              <div>
+                <h2 className={styles.sectionTitle}>검색 결과</h2>
+                <p className={styles.sectionMeta}>{searchTitle}</p>
+              </div>
+              <span className={styles.countBadge}>{searchResultCount}</span>
             </div>
 
             {schoolsQuery.isLoading && (
-              <div className={styles.messageCard}>학교 목록을 불러오는 중입니다.</div>
+              <div className={styles.messageCard}>불러오는 중</div>
             )}
 
             {!schoolsQuery.isLoading && filteredSchools.length === 0 && (
-              <div className={styles.messageCard}>표시할 학교가 없습니다.</div>
+              <div className={styles.messageCard}>결과 없음</div>
             )}
 
-            <div className={styles.schoolList}>
-              {filteredSchools.map((school) => (
-                <SchoolSummaryCard
-                  key={school.id}
-                  school={school}
-                  isSelected={selectedSchoolId === school.id}
-                  onClick={setSelectedSchoolId}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <section className={styles.detailCard}>
-          <h2 className={styles.detailTitle}>선택 학교 상세</h2>
-
-          {!selectedSchool && (
-            <p className={styles.detailHelper}>선택된 학교가 없습니다.</p>
-          )}
-
-          {selectedSchool && (
-            <>
-              <div className={styles.detailImageWrap}>
-                {selectedSchool.imageUrl ? (
-                  <img
-                    className={styles.detailImage}
-                    src={selectedSchool.imageUrl}
-                    alt={`${selectedSchool.name} 대표 이미지`}
+            {!schoolsQuery.isLoading && filteredSchools.length > 0 && (
+              <div className={styles.directoryList}>
+                {filteredSchools.map((school) => (
+                  <SchoolSummaryCard
+                    key={school.id}
+                    school={school}
+                    tier={getSchoolTier(school.id, tierMap)}
+                    isSelected={selectedSchoolId === school.id}
+                    onClick={setSelectedSchoolId}
                   />
-                ) : (
-                  <div className={styles.detailFallback}>{selectedSchool.name.slice(0, 1)}</div>
-                )}
+                ))}
               </div>
-              <strong className={styles.schoolName}>{selectedSchool.name}</strong>
+            )}
+          </section>
+        </aside>
 
-              <p className={styles.schoolType}>{schoolLabelMap[selectedSchool.type]}</p>
-              <p className={styles.schoolAddress}>{selectedSchool.address}</p>
-            </>
-          )}
+        <section className={styles.rightColumn}>
+          <div className={styles.detailShell}>
+            {!selectedSchool && !meQuery.isError && (
+              <div className={styles.emptyPanel}>학교를 선택하세요.</div>
+            )}
 
-          {meQuery.isError && (
-            <p className={styles.detailNotice}>
-              내 정보를 불러오는데 문제가 생겼어요. (error: useMe응답에러)
-            </p>
-          )}
+            {selectedSchool && (
+              <SchoolDetailPanel
+                school={selectedSchool}
+                tier={getSchoolTier(selectedSchool.id, tierMap)}
+                isMySchoolSelected={isMySchoolSelected}
+                hasMySchool={Boolean(mySchool)}
+                memberCount={membersQuery.data?.members.length ?? 0}
+                members={membersQuery.data?.members ?? []}
+                isMembersLoading={membersQuery.isLoading}
+                selectedTypeLabel={selectedTypeLabel}
+                onOpenProfile={handleMoveProfile}
+                onSelectMySchool={() => {
+                  if (mySchool) {
+                    setSelectedSchoolId(mySchool.id)
+                  }
+                }}
+              />
+            )}
+
+            {meQuery.isError && (
+              <div className={styles.emptyPanel}>정보를 불러올 수 없습니다.</div>
+            )}
+          </div>
         </section>
       </section>
-
-      <div className={styles.membersSection}>
-        <SchoolMembersPanel
-          canShowMembers={isMySchoolSelected}
-          isVerified={Boolean(mySchool)}
-          isLoading={membersQuery.isLoading}
-          members={membersQuery.data?.members ?? []}
-          selectedSchoolName={selectedSchool?.name ?? null}
-        />
-      </div>
     </div>
   )
 }
 
 export default MainPage
-
-

@@ -1,7 +1,7 @@
-import { useState, type SubmitEvent } from "react";
+import { useMemo, useState, type SubmitEvent } from "react";
 import style from './styles/LoginPage.module.css'
 import { requestLogin, requestSignup } from "../api/auth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DEFAULT_SCHOOL_PATH } from "../constants/schools";
 import { useAuthStore } from "../store/authStore";
 import { getMe } from "../api/users";
@@ -10,8 +10,18 @@ import { getMe } from "../api/users";
 
 function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const setAuthenticated = useAuthStore((state) => state.setAuthenticated)
   const setRegistered = useAuthStore((state) => state.setRegistered)
+  const redirectPath = useMemo(() => {
+    const redirect = new URLSearchParams(location.search).get('redirect')
+
+    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('/login')) {
+      return DEFAULT_SCHOOL_PATH
+    }
+
+    return redirect
+  }, [location.search])
 
   // 로그인탭과 회원가입탭 선언
   const [mode, setMode] = useState<'login' | 'signup'>('login')
@@ -38,7 +48,7 @@ function LoginPage() {
       setAuthenticated(true)
       setRegistered(me.schools.length > 0)
       // 로그인 이후에 다시 리라우터링함
-      navigate(DEFAULT_SCHOOL_PATH)
+      navigate(redirectPath, { replace: true })
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : '로그인에 실패했습니다.')
     } finally {

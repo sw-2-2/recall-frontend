@@ -1,11 +1,34 @@
 :root {
-  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  color: #172033;
-  background: linear-gradient(180deg, #f4f7fb 0%, #eef3f7 100%);
+  --page-bg-top: #f4efe8;
+  --page-bg-bottom: #f4efe8;
+  --paper: rgba(255, 255, 255, 0.94);
+  --paper-strong: #ffffff;
+  --ink: #1e2430;
+  --ink-soft: #69655f;
+  --line: rgba(120, 100, 81, 0.16);
+  --accent: #a5643f;
+  --accent-deep: #834929;
+  --accent-soft: #f2e2d6;
+  --accent-soft-strong: #e6d0be;
+  --surface-soft: #faf7f3;
+  --surface-tint: #f6efe8;
+  --surface-tint-strong: #efe4d8;
+  --navy: #1e2430;
+  --shadow: 0 12px 32px rgba(34, 25, 18, 0.06);
+  --display-font: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+
+  font-family: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: var(--ink);
+  background: var(--page-bg-top);
 }
 
+
 html,
-body,
+body {
+  background: var(--page-bg-top);
+  color: var(--ink);
+}
+
 #root {
   height: 100%;
   margin: 0;
