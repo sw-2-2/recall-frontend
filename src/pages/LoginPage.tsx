@@ -1,198 +1,204 @@
-import { useMemo, useState, type SubmitEvent } from "react";
+import { useState, type FormEvent } from 'react'
 import style from './styles/LoginPage.module.css'
-import { requestLogin, requestSignup } from "../api/auth";
-import { useLocation, useNavigate } from "react-router-dom";
-import { DEFAULT_SCHOOL_PATH } from "../constants/schools";
-import { useAuthStore } from "../store/authStore";
-import { getMe } from "../api/users";
-
-
+import { requestLogin, requestSignup } from '../api/auth'
+import { useNavigate } from 'react-router-dom'
+import { DEFAULT_SCHOOL_PATH } from '../constants/schools'
+import { useAuthStore } from '../store/authStore'
+import { getMe } from '../api/users'
 
 function LoginPage() {
   const navigate = useNavigate()
-  const location = useLocation()
+
   const setAuthenticated = useAuthStore((state) => state.setAuthenticated)
   const setRegistered = useAuthStore((state) => state.setRegistered)
-  const redirectPath = useMemo(() => {
-    const redirect = new URLSearchParams(location.search).get('redirect')
 
-    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('/login')) {
-      return DEFAULT_SCHOOL_PATH
-    }
-
-    return redirect
-  }, [location.search])
-
-  // 로그인탭과 회원가입탭 선언
   const [mode, setMode] = useState<'login' | 'signup'>('login')
 
-  // 로그인, 회원가입 폼
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' })
-  const [signupForm, setSignupForm] = useState({ email: '', password: '', name: '', phone: '', address: '', })
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: '',
+  })
 
+  const [signupForm, setSignupForm] = useState({
+    email: '',
+    password: '',
+    name: '',
+    phone: '',
+    address: '',
+  })
 
   const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
 
-  const handleLoginSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    setErrorMessage(null)
+    setMessage(null)
 
     try {
       await requestLogin(loginForm)
-
       const me = await getMe()
 
-      // 로그인 이후에 인증상태 변경
       setAuthenticated(true)
       setRegistered(me.schools.length > 0)
-      // 로그인 이후에 다시 리라우터링함
-      navigate(redirectPath, { replace: true })
+
+      navigate(DEFAULT_SCHOOL_PATH)
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '로그인에 실패했습니다.')
+      setIsSuccess(false)
+      setMessage(
+        error instanceof Error ? error.message : '로그인에 실패했습니다.',
+      )
     } finally {
       setIsLoading(false)
     }
   }
 
-
-  const handleSignupSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault() // form의 특성인 자동제출을 막기 위해서 씀. 안 쓰면 브라우저가 새로 로드돼서 내용 다날라감
-
-    const normalizedSignupForm = {
-      email: signupForm.email.trim(),
-      password: signupForm.password.trim(),
-      name: signupForm.name.trim(),
-      phone: signupForm.phone.trim(),
-      address: signupForm.address.trim(),
-    }
-
-    if (!normalizedSignupForm.email || !normalizedSignupForm.password || !normalizedSignupForm.name) {
-      setErrorMessage('이메일, 비밀번호, 이름을 입력해주세요.')
-      return
-    }
-
+  const handleSignupSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setIsLoading(true)
-    setErrorMessage(null)
+    setMessage(null)
 
     try {
-      await requestSignup(normalizedSignupForm)
-      // 로그인 폼에 데이터 넣음
+      await requestSignup(signupForm)
+
       setLoginForm({
-        email: normalizedSignupForm.email,
-        password: normalizedSignupForm.password
+        email: signupForm.email,
+        password: signupForm.password,
       })
-      // 로그인 탭으로 변경
+
       setMode('login')
-      setErrorMessage('회원가입이 완료되었습니다. 로그인해주세요.')
+
+      setIsSuccess(true)
+      setMessage('가입이 완료되었습니다. 바로 로그인해보세요.')
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '회원가입 실패') // 원래 쓴 에러가 맞으면 그거 쓰고 아니면 '회원가입실패' 띄움
+      setIsSuccess(false)
+      setMessage(error instanceof Error ? error.message : '회원가입 실패')
     } finally {
       setIsLoading(false)
     }
   }
-
-
-
 
   return (
     <div className={style.LoginPage}>
-      <div className={style.LoginPageBasic}>
-        <div className={style.LoginPageText}>
-          <div>안녕하세요</div>
-          <div>RE:CALL 입니다.</div>
-          <p style={{ fontSize: '16px' }}>찾고 싶은 추억의 친구가 있으신가요?</p>
-        </div>
+      <div className={style.LoginContainer}>
+        
+        {/* 왼쪽 */}
+        <section className={style.LoginIntro}>
+          <h1 className={style.Brand}>RE:CALL</h1>
 
-        <div className={style.LoginButton}>
-          <div style={{ marginLeft: '10px' }}>
-            {mode === 'login' ? "로그인" : "회원가입"}
-            {/* 로그인일 때 */}
-            {mode === 'login' && (
-              <form onSubmit={handleLoginSubmit}>
-                <div>
-                  <input type="email" placeholder="이메일" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
-                </div>
+          <p className={style.Description}>
+            잊고 지낸 인연을<br />
+            다시 이어보세요
+          </p>
 
-                <div>
-                  <input type="password" placeholder="비밀번호" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
-                </div>
+          {/* 부드러운 전환 */}
+          <div className={style.SubWrapper}>
+            <p
+              className={`${style.SubDescription} ${
+                mode === 'login' ? style.Show : style.Hide
+              }`}
+            >
+              다시 만나러 갈 준비가 되셨나요?
+            </p>
 
-                <button type="submit" disabled={isLoading}>
-                  로그인
-                </button>
-              </form>
-            )}
-
-            {/* 회원가입일 때 */}
-            {mode === 'signup' && (
-              <form onSubmit={handleSignupSubmit}>
-                <div>
-                  <input
-                    type="email"
-                    placeholder="이메일"
-                    value={signupForm.email}
-                    onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="password"
-                    placeholder="비밀번호"
-                    value={signupForm.password}
-                    onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="이름"
-                    value={signupForm.name}
-                    onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="전화번호"
-                    value={signupForm.phone}
-                    onChange={(e) => setSignupForm({ ...signupForm, phone: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="주소"
-                    value={signupForm.address}
-                    onChange={(e) => setSignupForm({ ...signupForm, address: e.target.value })}
-                  />
-                </div>
-
-                <button type="submit" disabled={isLoading}>
-                  회원가입
-                </button>
-              </form>
-            )}
-
-            {errorMessage && <p>{errorMessage}</p>}
-
-
+            <p
+              className={`${style.SubDescription} ${
+                mode === 'signup' ? style.Show : style.Hide
+              }`}
+            >
+              새로운 인연을 시작해보세요.
+            </p>
           </div>
+        </section>
 
-          <div>
-            <button type="button" onClick={() => setMode('login')}>
+        {/* 오른쪽 */}
+        <section className={style.LoginCard}>
+          <div className={style.TabGroup}>
+            <button
+              type="button"
+              className={`${style.TabButton} ${
+                mode === 'login' ? style.ActiveTab : ''
+              }`}
+              onClick={() => {
+                setMode('login')
+                setMessage(null)
+                setLoginForm({ email: '', password: '' })
+              }}
+            >
               로그인
             </button>
-            <button type="button" onClick={() => setMode('signup')}>
+
+            <button
+              type="button"
+              className={`${style.TabButton} ${
+                mode === 'signup' ? style.ActiveTab : ''
+              }`}
+              onClick={() => {
+                setMode('signup')
+                setMessage(null)
+                setSignupForm({
+                  email: '',
+                  password: '',
+                  name: '',
+                  phone: '',
+                  address: '',
+                })
+              }}
+            >
               회원가입
             </button>
           </div>
-        </div>
+
+          <h2 className={style.FormTitle}>
+            {mode === 'login' ? '로그인' : '회원가입'}
+          </h2>
+
+          {message && (
+            <p className={isSuccess ? style.SuccessMessage : style.ErrorMessage}>
+              {message}
+            </p>
+          )}
+
+          {mode === 'login' && (
+            <form className={style.Form} onSubmit={handleLoginSubmit}>
+              <input
+                className={style.Input}
+                type="email"
+                placeholder="이메일"
+                value={loginForm.email}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, email: e.target.value })
+                }
+              />
+              <input
+                className={style.Input}
+                type="password"
+                placeholder="비밀번호"
+                value={loginForm.password}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, password: e.target.value })
+                }
+              />
+              <button className={style.SubmitButton} disabled={isLoading}>
+                {isLoading ? '로그인 중...' : '로그인'}
+              </button>
+            </form>
+          )}
+
+          {mode === 'signup' && (
+            <form className={style.Form} onSubmit={handleSignupSubmit}>
+              <input className={style.Input} placeholder="이메일" />
+              <input className={style.Input} placeholder="비밀번호" />
+              <input className={style.Input} placeholder="이름" />
+              <input className={style.Input} placeholder="전화번호" />
+              <input className={style.Input} placeholder="주소" />
+              <button className={style.SubmitButton} disabled={isLoading}>
+                {isLoading ? '가입 중...' : '회원가입'}
+              </button>
+            </form>
+          )}
+        </section>
       </div>
     </div>
   )
