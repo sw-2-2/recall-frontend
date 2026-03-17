@@ -128,7 +128,7 @@ export const apiRequest = async <T>(
   })
 
   if (!response.ok) {
-    if (auth && UNAUTHORIZED_STATUSES.has(response.status)) {
+    if (auth && UNAUTHORIZED_STATUSES.has(response.status)) {$
       handleUnauthorizedResponse(path)
     }
 
