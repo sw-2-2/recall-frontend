@@ -332,15 +332,12 @@ function ProfilePage() {
                 accept="image/*"
                 onChange={(event) => {
                   const file = event.target.files?.[0]
-
                   if (!file) {
                     return
                   }
-
                   if (previewUrl) {
                     URL.revokeObjectURL(previewUrl)
                   }
-
                   setPreviewUrl(URL.createObjectURL(file))
                 }}
               />
