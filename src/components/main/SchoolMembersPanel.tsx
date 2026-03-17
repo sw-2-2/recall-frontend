@@ -1,7 +1,8 @@
 import styles from './styles/SchoolMembersPanel.module.css'
-import type { SchoolMember } from '../../types/school'
+import type { SchoolMember, SchoolType } from '../../types/school'
 
 type Props = {
+  schoolType: SchoolType
   canShowMembers: boolean
   isVerified: boolean
   isLoading: boolean
@@ -11,11 +12,16 @@ type Props = {
   onSelectMySchool: () => void
 }
 
+type SchoolRow = {
+  type: SchoolType
+  label: string
+  value?: string | null
+}
+
 function formatPhoneNumber(phone?: string | null) {
   if (!phone) {
     return '-'
   }
-
   const digits = phone.replace(/\D/g, '')
 
   if (digits.startsWith('02')) {
@@ -40,6 +46,7 @@ function formatPhoneNumber(phone?: string | null) {
 }
 
 function SchoolMembersPanel({
+  schoolType,
   canShowMembers,
   isVerified,
   isLoading,
@@ -91,27 +98,48 @@ function SchoolMembersPanel({
 
       {!isLoading && members.length > 0 && (
         <ul className={styles.memberGrid}>
-          {visibleMembers.map((member) => (
-            <li key={member.id} className={styles.memberCard}>
-              <div className={styles.memberHead}>
-                <strong className={styles.memberName}>{member.name}</strong>
-              </div>
-              <dl className={styles.memberMeta}>
-                <div className={styles.metaRow}>
-                  <dt className={styles.metaLabel}>졸업</dt>
-                  <dd className={styles.metaValue}>{member.graduationYear}년</dd>
+          {visibleMembers.map((member) => {
+            const schoolRows: SchoolRow[] = [
+              { type: 'elementary', label: '초등학교', value: member.elementarySchoolName },
+              { type: 'middle', label: '중학교', value: member.middleSchoolName },
+              { type: 'high', label: '고등학교', value: member.highSchoolName },
+            ]
+            const currentSchool = schoolRows.find((row) => row.type === schoolType) ?? {
+              type: schoolType,
+              label: '현재 학교',
+              value: null,
+            }
+            const otherSchools = schoolRows.filter((row) => row.type !== schoolType)
+
+            return (
+              <li key={member.id} className={styles.memberCard}>
+                <div className={styles.memberHeader}>
+                  <div className={styles.nameBlock}>
+                    <strong className={styles.memberName}>{member.name}</strong>
+                  </div>
+                  <span className={styles.yearBadge}>{member.graduationYear}년 졸업</span>
                 </div>
-                <div className={styles.metaRow}>
-                  <dt className={styles.metaLabel}>이메일</dt>
-                  <dd className={styles.metaValue}>{member.email || '-'}</dd>
+
+                <div className={styles.primarySchool}>
+                  <span className={styles.primaryLabel}>{currentSchool.label}</span>
+                  <strong className={styles.primaryValue}>{currentSchool.value ?? '-'}</strong>
                 </div>
-                <div className={styles.metaRow}>
-                  <dt className={styles.metaLabel}>전화번호</dt>
-                  <dd className={styles.metaValue}>{formatPhoneNumber(member.phone)}</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
+
+                <dl className={styles.memberMeta}>
+                  {otherSchools.map((school) => (
+                    <div key={school.type} className={styles.metaRow}>
+                      <dt className={styles.metaLabel}>{school.label}</dt>
+                      <dd className={styles.metaValue}>{school.value ?? '-'}</dd>
+                    </div>
+                  ))}
+                  <div className={`${styles.metaRow} ${styles.fullRow}`}>
+                    <dt className={styles.metaLabel}>전화번호</dt>
+                    <dd className={styles.metaValue}>{formatPhoneNumber(member.phone)}</dd>
+                  </div>
+                </dl>
+              </li>
+            )
+          })}
         </ul>
       )}
     </section>

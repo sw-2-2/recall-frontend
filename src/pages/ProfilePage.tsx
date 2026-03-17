@@ -8,64 +8,16 @@ import { fetchMemberProfile, updateMemberProfile, saveVerifiedSchool, fetchVerif
 import { useAuthStore } from '../store/authStore'
 import { requestLogout } from '../api/auth.ts'
 import { DEFAULT_SCHOOL_PATH } from '../constants/schools.ts'
-
-function formatPhoneNumber(phone?: string | null) {
-  if (!phone) {
-    return '-'
-  }
-
-  const digits = phone.replace(/\D/g, '')
-
-  if (digits.startsWith('02')) {
-    if (digits.length === 9) {
-      return digits.replace(/^(02)(\d{3})(\d{4})$/, '$1-$2-$3')
-    }
-
-    if (digits.length === 10) {
-      return digits.replace(/^(02)(\d{4})(\d{4})$/, '$1-$2-$3')
-    }
-  }
-
-  if (digits.length === 10) {
-    return digits.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3')
-  }
-
-  if (digits.length === 11) {
-    return digits.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3')
-  }
-
-  return phone
-}
-
-function splitPhoneNumber(phone?: string | null) {
-  const digits = (phone || '').replace(/\D/g, '').slice(0, 11)
-
-  if (digits.startsWith('02')) {
-    if (digits.length <= 2) {
-      return [digits, '', '']
-    }
-
-    if (digits.length <= 6) {
-      return ['02', digits.slice(2), '']
-    }
-
-    return ['02', digits.slice(2, digits.length - 4), digits.slice(-4)]
-  }
-
-  if (digits.length <= 3) {
-    return [digits, '', '']
-  }
-
-  if (digits.length <= 7) {
-    return [digits.slice(0, 3), digits.slice(3), '']
-  }
-
-  return [digits.slice(0, 3), digits.slice(3, digits.length - 4), digits.slice(-4)]
-}
-
-function combinePhoneNumber(first: string, second: string, third: string) {
-  return `${first}${second}${third}`.replace(/\D/g, '')
-}
+import {
+  combineMobilePhoneNumber,
+  formatMobilePhoneNumber,
+  hasMobilePhoneInput,
+  isCompleteMobilePhoneSegments,
+  isValidMobilePhoneNumber,
+  sanitizeMobilePhonePart,
+  splitMobilePhoneNumber,
+  type MobilePhoneSegments,
+} from '../utils/mobilePhone'
 
 function splitAddress(address?: string | null) {
   const parts = (address || '').trim().split(/\s+/).filter(Boolean)
@@ -107,6 +59,12 @@ function ProfilePage() {
     name: '',
     phone: '',
     address: '',
+  })
+  const [savedProfilePhone, setSavedProfilePhone] = useState('')
+  const [profilePhoneSegments, setProfilePhoneSegments] = useState<MobilePhoneSegments>({
+    first: '',
+    second: '',
+    third: '',
   })
 
   const [schoolForms, setSchoolForms] = useState<Record<SchoolType, SchoolForm>>({
@@ -158,6 +116,8 @@ function ProfilePage() {
           phone: profile.phone,
           address: profile.address,
         })
+        setSavedProfilePhone(profile.phone)
+        setProfilePhoneSegments(splitMobilePhoneNumber(profile.phone))
         setProfileEmail(profile.email)
         setProfileImageUrl(profile.profileImageUrl)
 
@@ -180,13 +140,25 @@ function ProfilePage() {
   const handleProfileSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    const nextPhone = combineMobilePhoneNumber(profilePhoneSegments)
+
+    if (hasMobilePhoneInput(profilePhoneSegments) && !isCompleteMobilePhoneSegments(profilePhoneSegments)) {
+      setMessage('휴대폰 번호 11자리를 모두 입력해주세요.')
+      return
+    }
+
+    if (nextPhone && !isValidMobilePhoneNumber(nextPhone)) {
+      setMessage('휴대폰 번호를 정확히 입력해주세요.')
+      return
+    }
+
     try {
       setProfileSaving(true)
       setMessage('')
 
       const updatedProfile = await updateMemberProfile({
         name: profileForm.name,
-        phone: profileForm.phone,
+        phone: nextPhone,
         address: profileForm.address,
       })
 
@@ -195,6 +167,8 @@ function ProfilePage() {
         phone: updatedProfile.phone,
         address: updatedProfile.address,
       })
+      setSavedProfilePhone(updatedProfile.phone)
+      setProfilePhoneSegments(splitMobilePhoneNumber(updatedProfile.phone))
       setProfileEmail(updatedProfile.email)
       setProfileImageUrl(updatedProfile.profileImageUrl)
 
@@ -293,7 +267,11 @@ function ProfilePage() {
     }
   }
 
-  const [phoneFirst, phoneSecond, phoneThird] = splitPhoneNumber(profileForm.phone)
+  const updateProfilePhone = (nextPhone: MobilePhoneSegments) => {
+    setProfilePhoneSegments(nextPhone)
+  }
+
+  const { first: phoneFirst, second: phoneSecond, third: phoneThird } = profilePhoneSegments
   const [addressCity, addressDistrict] = splitAddress(profileForm.address)
 
   if (loading) {
@@ -332,15 +310,12 @@ function ProfilePage() {
                 accept="image/*"
                 onChange={(event) => {
                   const file = event.target.files?.[0]
-
                   if (!file) {
                     return
                   }
-
                   if (previewUrl) {
                     URL.revokeObjectURL(previewUrl)
                   }
-
                   setPreviewUrl(URL.createObjectURL(file))
                 }}
               />
@@ -354,7 +329,7 @@ function ProfilePage() {
           <dl className={style.summaryMeta}>
             <div className={style.summaryRow}>
               <dt className={style.summaryLabel}>전화번호</dt>
-              <dd className={style.summaryValue}>{formatPhoneNumber(profileForm.phone)}</dd>
+              <dd className={style.summaryValue}>{formatMobilePhoneNumber(savedProfilePhone)}</dd>
             </div>
             <div className={style.summaryRow}>
               <dt className={style.summaryLabel}>주소</dt>
@@ -401,16 +376,9 @@ function ProfilePage() {
                     maxLength={3}
                     value={phoneFirst}
                     onChange={(e) =>
-                      setProfileForm((prev) => {
-                        const [, second, third] = splitPhoneNumber(prev.phone)
-                        return {
-                          ...prev,
-                          phone: combinePhoneNumber(
-                            e.target.value.replace(/\D/g, '').slice(0, 3),
-                            second,
-                            third,
-                          ),
-                        }
+                      updateProfilePhone({
+                        ...profilePhoneSegments,
+                        first: sanitizeMobilePhonePart(e.target.value, 3),
                       })
                     }
                     placeholder="010"
@@ -422,16 +390,9 @@ function ProfilePage() {
                     maxLength={4}
                     value={phoneSecond}
                     onChange={(e) =>
-                      setProfileForm((prev) => {
-                        const [first, , third] = splitPhoneNumber(prev.phone)
-                        return {
-                          ...prev,
-                          phone: combinePhoneNumber(
-                            first,
-                            e.target.value.replace(/\D/g, '').slice(0, 4),
-                            third,
-                          ),
-                        }
+                      updateProfilePhone({
+                        ...profilePhoneSegments,
+                        second: sanitizeMobilePhonePart(e.target.value, 4),
                       })
                     }
                     placeholder="1234"
@@ -443,16 +404,9 @@ function ProfilePage() {
                     maxLength={4}
                     value={phoneThird}
                     onChange={(e) =>
-                      setProfileForm((prev) => {
-                        const [first, second] = splitPhoneNumber(prev.phone)
-                        return {
-                          ...prev,
-                          phone: combinePhoneNumber(
-                            first,
-                            second,
-                            e.target.value.replace(/\D/g, '').slice(0, 4),
-                          ),
-                        }
+                      updateProfilePhone({
+                        ...profilePhoneSegments,
+                        third: sanitizeMobilePhonePart(e.target.value, 4),
                       })
                     }
                     placeholder="1234"
