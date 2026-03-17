@@ -83,6 +83,7 @@ function SchoolDetailPanel({
 
       <section className={styles.content}>
         <SchoolMembersPanel
+          schoolType={school.type}
           canShowMembers={isMySchoolSelected}
           isVerified={hasMySchool}
           isLoading={isMembersLoading}
